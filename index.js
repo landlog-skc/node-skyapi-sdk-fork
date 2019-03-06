@@ -70,10 +70,10 @@ const getResults = async function (puuid) {
   }
 }
 
-const promise = getResults('7c4a9bfe-5fea-4782-ab47-ee1e5d57391d')
-promise.then((res) => {
-  console.log(JSON.stringify(res, null, 2))
-  process.exit(0)
-})
+// const promise = getResults('7c4a9bfe-5fea-4782-ab47-ee1e5d57391d')
+// promise.then((res) => {
+//   console.log(JSON.stringify(res, null, 2))
+//   process.exit(0)
+// })
 
 module.exports = { getResults }
