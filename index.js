@@ -39,10 +39,14 @@ const getResults = async function (puuid) {
     if (type) {
       type = internals.mapTypes[type] || type
       if (type.indexOf('3dtiles') !== -1) {
+        const typeToDir  = {
+          '3dtiles_pointcloud': 'pointcloud'
+        }
+
         layers.push({
           type,
           bucket: 'test.datahub-benchmark.1',
-          path: `${puuid}/3dtiles/tileset.json`
+          path: `${puuid}/3dtiles/${typeToDir[type]}/tileset.json`
         })
       } else {
         files.push({
@@ -59,17 +63,17 @@ const getResults = async function (puuid) {
   })
 
   return {
-    results {
+    results: {
       layers,
       files
     }
   }
 }
 
-// const promise = getResults('7c4a9bfe-5fea-4782-ab47-ee1e5d57391d')
-// promise.then((res) => {
-//   console.log(JSON.stringify(res, null, 2))
-//   process.exit(0)
-// })
+const promise = getResults('7c4a9bfe-5fea-4782-ab47-ee1e5d57391d')
+promise.then((res) => {
+  console.log(JSON.stringify(res, null, 2))
+  process.exit(0)
+})
 
 module.exports = { getResults }
