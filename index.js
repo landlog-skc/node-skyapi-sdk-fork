@@ -14,9 +14,12 @@ internals.mapTypes = {
   ortho: 'orthophoto'
 }
 
-const getResults = async function (puuid) {
-  const baseurl = 'https://s3-us-west-2.amazonaws.com/test.datahub-benchmark.1'
-  const url = `${baseurl}/${puuid}/manifest.json`
+/*
+  This method is going to be implemented as lambda function responsible for
+  listing processing job outputs in an S3 bucket.
+*/
+const getResults = async ({origin, bucket, puuid}) => {
+  const url = `${origin}/${bucket}/${puuid}/manifest.json`
   const res = await Fetch(url, {
     method: 'GET',
     mode: 'cors'
@@ -45,7 +48,7 @@ const getResults = async function (puuid) {
 
         layers.push({
           type,
-          bucket: 'test.datahub-benchmark.1',
+          bucket,
           path: `${puuid}/3dtiles/${typeToDir[type]}/tileset.json`
         })
       } else {
@@ -55,7 +58,7 @@ const getResults = async function (puuid) {
           type,
           resolution,
           url: '',
-          bucket: 'test.datahub-benchmark.1',
+          bucket,
           path: `${puuid}/${filename}`
         })
       }
@@ -69,11 +72,5 @@ const getResults = async function (puuid) {
     }
   }
 }
-
-// const promise = getResults('7c4a9bfe-5fea-4782-ab47-ee1e5d57391d')
-// promise.then((res) => {
-//   console.log(JSON.stringify(res, null, 2))
-//   process.exit(0)
-// })
 
 module.exports = { getResults }
