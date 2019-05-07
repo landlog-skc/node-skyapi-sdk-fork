@@ -2,14 +2,23 @@
   "name": "@skycatch/node-skyapi-sdk",
   "version": "0.0.1-alpha.1",
   "description": "Node SDK to interact with SkyAPI",
-  "main": "index.js",
+  "main": "./dist/skyapi.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node bin/build.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@zeit/fetch-retry": "^3.0.0",
-    "node-fetch": "^2.3.0"
+    "@zeit/fetch-retry": "^4.0.0",
+    "jws": "^3.2.2",
+    "node-fetch": "^2.4.1",
+    "qs": "^6.7.0"
+  },
+  "devDependencies": {
+    "@skycatch/lambda-api-datasets-post-v2": "github:skycatch/lambda-api-datasets-post-v2",
+    "js-beautify": "^1.10.0",
+    "mustache": "^3.0.1",
+    "openapi-schema-validation": "^0.4.2",
+    "swagger-parser": "^6.0.5"
   }
 }

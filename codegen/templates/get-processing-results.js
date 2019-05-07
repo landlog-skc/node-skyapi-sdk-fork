@@ -1,0 +1,13 @@
+
+async getProcessingResults ({puuid, layers}) {
+  let method = 'GET'
+  let path = `/processes/${puuid}/result`
+  let query = {}
+  let body = {}
+
+  if (layers) {
+    query.layers = true
+  }
+
+  return request({method, path, query, body})
+}
