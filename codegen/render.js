@@ -9,7 +9,10 @@ const template =
 
 const partials = {
   method:
-    fs.readFileSync(path.resolve(__dirname, 'templates/method.js'), 'utf8')
+    fs.readFileSync(path.resolve(__dirname, 'templates/method.js'), 'utf8'),
+  // until lambda function is migrated to Open API ..
+  getProcessingResults:
+    fs.readFileSync(path.resolve(__dirname, 'templates/get-processing-results.js'), 'utf8'),
 }
 
 module.exports = (view) =>
