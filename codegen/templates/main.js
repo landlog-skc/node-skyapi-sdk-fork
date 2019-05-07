@@ -4,10 +4,23 @@ const fetch = require('@zeit/fetch-retry')(require('node-fetch'))
 const qs = require('qs')
 const jws = require('jws')
 
-module.exports = function SkyAPI ({origin, key, secret, tenant, audience, token}) {
+/*
+  Example values:
+  origin:
+    - https://staging-gemba.skycatch.com/v1
+    - https://api.skycatch.com/v1
+  audience:
+    - datahub-api.skycatch.com/data_processing
+    - https://api.skycatch.com/
+  auth0:
+    - https://skycatch-development.auth0.com/v1
+    - https://skycatch-staging.auth0.com/v1
+*/
+
+module.exports = function SkyAPI ({origin, auth0, key, secret, audience, token}) {
 
   const refresh = async () => {
-    const res = await fetch(`https://${tenant}/v1/oauth/token`, {
+    const res = await fetch(`${auth0}/oauth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -16,7 +29,7 @@ module.exports = function SkyAPI ({origin, key, secret, tenant, audience, token}
         grant_type: 'client_credentials',
         client_id: key,
         client_secret: secret,
-        audience: audience
+        audience
       })
     })
 
@@ -25,10 +38,13 @@ module.exports = function SkyAPI ({origin, key, secret, tenant, audience, token}
   }
 
   const request = async ({method, path, query, body}) => {
-    // const {payload: {exp}} = jws.decode(token)
-    // if (Date.now() >= exp * 1000) {
-    //   token = await refresh()
-    // }
+    if (!token) {
+      token = await refresh()
+    }
+    const {payload: {exp}} = jws.decode(token)
+    if (Date.now() >= exp * 1000) {
+      token = await refresh()
+    }
 
     const headers = {
       authorization: `Bearer ${token}`
@@ -47,7 +63,7 @@ module.exports = function SkyAPI ({origin, key, secret, tenant, audience, token}
     const options = {
       method,
       headers,
-      body,
+      body: Object.keys(body).length ? body : undefined,
     }
 
     const res = await fetch(url, options)
@@ -65,5 +81,6 @@ module.exports = function SkyAPI ({origin, key, secret, tenant, audience, token}
     {{#methods}}
       {{>method}},
     {{/methods}}
+    {{>getProcessingResults}},
   }
 }
