@@ -10,13 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "@zeit/fetch-retry": "^4.0.0",
-    "jws": "^3.2.2",
-    "node-fetch": "^2.4.1",
-    "qs": "^6.7.0",
-
     "js-beautify": "^1.10.0",
+    "jws": "^3.2.2",
     "mustache": "^3.0.1",
+    "node-fetch": "^2.4.1",
     "openapi-schema-validation": "^0.4.2",
+    "qs": "^6.7.0",
     "swagger-parser": "^6.0.5"
   },
   "devDependencies": {
