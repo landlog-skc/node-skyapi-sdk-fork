@@ -10,11 +10,17 @@
 
 async {{operationId}} (params) {
   let method = '{{method}}'.toUpperCase()
-  let path = '{{&path}}'
+  let path = '{{&endpoint}}'
   let query = {}
   let body = {}
 
   {{#parameters}}
+
+    {{#path}}
+    if (params['{{&name}}'] !== undefined) {
+      path = path.replace('{' + '{{&name}}' + '}', params['{{&name}}'])
+    }
+    {{/path}}
 
     {{#query}}
     if (params['{{&name}}'] !== undefined) {

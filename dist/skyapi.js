@@ -129,6 +129,31 @@ module.exports = function SkyAPI({
         body
       })
     },
+    /**
+     * Start processing a dataset
+     * Initiates the processing of images or a point cloud in the dataset
+     * @method
+     * @name createProcessingJob
+     * @param (string) id - Dataset ID
+     */
+
+    async createProcessingJob(params) {
+      let method = 'post'.toUpperCase()
+      let path = '/datasets/{id}/processes'
+      let query = {}
+      let body = {}
+
+      if (params['id'] !== undefined) {
+        path = path.replace('{' + 'id' + '}', params['id'])
+      }
+
+      return request({
+        method,
+        path,
+        query,
+        body
+      })
+    },
 
     async getProcessingResults({
       puuid,

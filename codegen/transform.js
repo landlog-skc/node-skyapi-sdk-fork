@@ -14,7 +14,7 @@ module.exports = (definition) =>
       return {
         ...definition.paths[path][method],
         method,
-        path,
+        endpoint: path,
         parameters: parameters
           .map((config) => ({...config, type: config.schema.type, [config.in]: true}))
           .concat(form)
