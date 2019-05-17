@@ -12,11 +12,15 @@
     "@zeit/fetch-retry": "^4.0.0",
     "jws": "^3.2.2",
     "node-fetch": "^2.4.1",
-    "qs": "^6.7.0"
+    "qs": "^6.7.0",
+
+    "js-beautify": "^1.10.0",
+    "mustache": "^3.0.1",
+    "openapi-schema-validation": "^0.4.2",
+    "swagger-parser": "^6.0.5"
   },
   "devDependencies": {
     "@skycatch/lambda-api-datasets-post-v2": "github:skycatch/lambda-api-datasets-post-v2",
-    "@skycatch/lambda-api-datasets-processes-post-v2": "github:skycatch/lambda-api-datasets-processes-post-v2",
-    "@skycatch/node-skyapi-sdk-codegen": "./codegen/"
+    "@skycatch/lambda-api-datasets-processes-post-v2": "github:skycatch/lambda-api-datasets-processes-post-v2"
   }
 }
