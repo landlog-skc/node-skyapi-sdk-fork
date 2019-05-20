@@ -17,7 +17,7 @@ const jws = require('jws')
     - https://skycatch-staging.auth0.com/v1
 */
 
-module.exports = function SkyAPI ({origin, auth0, key, secret, audience, token}) {
+module.exports = function SkyAPI ({origin, auth0, key, secret, audience, token, version}) {
 
   const refresh = async () => {
     const res = await fetch(`${auth0}/oauth/token`, {

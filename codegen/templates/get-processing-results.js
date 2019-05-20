@@ -1,7 +1,7 @@
 
 async getProcessingResults ({puuid, layers}) {
   let method = 'GET'
-  let path = `/processes/${puuid}/result`
+  let path = `/v1/processes/${puuid}/result`
   let query = {}
   let body = {}
 

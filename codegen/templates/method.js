@@ -10,7 +10,7 @@
 
 async {{operationId}} (params) {
   let method = '{{method}}'.toUpperCase()
-  let path = '{{&endpoint}}'
+  let path = `/v${version || 2}` + '{{&endpoint}}'
   let query = {}
   let body = {}
 

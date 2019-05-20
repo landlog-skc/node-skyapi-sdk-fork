@@ -23,7 +23,8 @@ module.exports = function SkyAPI({
   key,
   secret,
   audience,
-  token
+  token,
+  version
 }) {
 
   const refresh = async () => {
@@ -106,7 +107,7 @@ module.exports = function SkyAPI({
 
     async createDataset(params) {
       let method = 'post'.toUpperCase()
-      let path = '/datasets'
+      let path = `/v${version || 2}` + '/datasets'
       let query = {}
       let body = {}
 
@@ -139,7 +140,7 @@ module.exports = function SkyAPI({
 
     async createProcessingJob(params) {
       let method = 'post'.toUpperCase()
-      let path = '/datasets/{id}/processes'
+      let path = `/v${version || 2}` + '/datasets/{id}/processes'
       let query = {}
       let body = {}
 
@@ -160,7 +161,7 @@ module.exports = function SkyAPI({
       layers
     }) {
       let method = 'GET'
-      let path = `/processes/${puuid}/result`
+      let path = `/v1/processes/${puuid}/result`
       let query = {}
       let body = {}
 
