@@ -78,9 +78,11 @@ module.exports = function SkyAPI ({origin, auth0, key, secret, audience, token, 
   return {
     refresh,
     request,
+
+    {{>getProcessingResults}},
+
     {{#methods}}
       {{>method}},
     {{/methods}}
-    {{>getProcessingResults}},
   }
 }
