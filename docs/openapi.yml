@@ -1,0 +1,24 @@
+openapi: 3.0.1
+info:
+  title: SkyAPI
+  version: 2.0.0
+  description: Fill in the rest of the info https://swagger.io/specification/
+  termsOfService: https://skycatch.com/terms/
+  contact:
+    email: api@skycatch.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: This is going to be a link to the generated docs
+  url: https://docs.skycatch.com/v2.0.0/reference
+servers:
+  - url: https://api.skycatch.com/v2
+  - url: https://staging-gemba.skycatch.com/v2
+paths:
+  /datasets:
+    post:
+      $ref: '../node_modules/lambda-api-datasets-post-v2/spec/lambda.yml'
+  /datasets/{id}/processes:
+    post:
+      $ref: '../node_modules/lambda-api-datasets-processes-post-v2/spec/lambda.yml'
