@@ -1,0 +1,195 @@
+openapi: 3.0.1
+info:
+  title: SkyAPI
+  version: 2.0.0
+  description: 'Fill in the rest of the info https://swagger.io/specification/'
+  termsOfService: 'https://skycatch.com/terms/'
+  contact:
+    email: api@skycatch.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+externalDocs:
+  description: This is going to be a link to the generated docs
+  url: 'https://docs.skycatch.com/v2.0.0/reference'
+servers:
+  - url: 'https://api.skycatch.com/v2'
+  - url: 'https://staging-gemba.skycatch.com/v2'
+paths:
+  /datasets:
+    post:
+      tags:
+        - dataset
+      summary: Creates a dataset
+      description: Long Description
+      operationId: createDataset
+      parameters:
+        - name: token
+          in: query
+          description: User access token
+          required: false
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: User identifier
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: Dataset name
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+          content:
+            application/json:
+              schema:
+                required:
+                  - dataset
+                additionalProperties: false
+                type: object
+                properties:
+                  credentials:
+                    required:
+                      - accessKeyId
+                      - secretAccessKey
+                      - sessionToken
+                      - expiration
+                      - bucket
+                    additionalProperties: false
+                    type: object
+                    properties:
+                      accessKeyId:
+                        type: string
+                      secretAccessKey:
+                        type: string
+                      sessionToken:
+                        type: string
+                      expiration:
+                        type: string
+                      bucket:
+                        type: string
+                        description: Bucket name
+                      key:
+                        type: string
+                        description: Processing job UUID
+                  dataset:
+                    required:
+                      - id
+                      - name
+                      - createdAt
+                    additionalProperties: false
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                      userId:
+                        type: string
+                      owner:
+                        type: string
+        '404':
+          description: Not Found
+          content: {}
+  '/datasets/{id}/processes':
+    post:
+      tags:
+        - processing_job
+      summary: Start processing a dataset
+      description: Initiates the processing of images or a point cloud in the dataset
+      operationId: createProcessingJob
+      parameters:
+        - name: uuid
+          in: path
+          description: Dataset ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                type:
+                  type: string
+                  description: Type of process to run
+                  enum:
+                    - images
+                    - pointCloud
+                    - publish
+                  default: images
+                ccrs:
+                  type: object
+                  description: >-
+                    The definition of the custom coordinate reference system
+                    used to generate outputs and parse inputs
+                  properties:
+                    output:
+                      type: object
+                      description: Input Parameters
+                    input:
+                      type: object
+                      description: Output Parameters
+                    transform:
+                      type: object
+                      description: Matrix Schema
+                options:
+                  type: object
+                  description: Option flags to trigger custom behavior
+                containerName:
+                  type: string
+                  description: Name of the partner storage container to sync back
+                prefix:
+                  type: string
+                  description: Prefix for the partner storage container to sync back
+                pointCloudColumnOrder:
+                  type: string
+                  description: >-
+                    The column order of a point cloud. Only used for TXT point
+                    clouds
+                connectionString:
+                  type: string
+                  description: >-
+                    Container string required to identify the repository source.
+                    This is only needed for syncing
+                resourceOwnerId:
+                  type: string
+                  description: Description
+                accessToken:
+                  type: string
+                  description: Description
+                refreshToken:
+                  type: string
+                  description: Description
+                syncType:
+                  type: string
+                  description: Description
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true

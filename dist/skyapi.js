@@ -95,6 +95,28 @@ module.exports = function SkyAPI({
   return {
     refresh,
     request,
+
+    async getProcessingResults({
+      puuid,
+      layers
+    }) {
+      let method = 'GET'
+      let path = `/v1/processes/${puuid}/result`
+      let query = {}
+      let body = {}
+
+      if (layers) {
+        query.layers = true
+      }
+
+      return request({
+        method,
+        path,
+        query,
+        body
+      })
+    },
+
     /**
      * Creates a dataset
      * Long Description
@@ -135,7 +157,18 @@ module.exports = function SkyAPI({
      * Initiates the processing of images or a point cloud in the dataset
      * @method
      * @name createProcessingJob
-     * @param (string) id - Dataset ID
+     * @param (string) uuid - Dataset ID
+     * @param (string) type - Type of process to run
+     * @param (object) ccrs - The definition of the custom coordinate reference system used to generate outputs and parse inputs
+     * @param (object) options - Option flags to trigger custom behavior
+     * @param (string) containerName - Name of the partner storage container to sync back
+     * @param (string) prefix - Prefix for the partner storage container to sync back
+     * @param (string) pointCloudColumnOrder - The column order of a point cloud. Only used for TXT point clouds
+     * @param (string) connectionString - Container string required to identify the repository source. This is only needed for syncing
+     * @param (string) resourceOwnerId - Description
+     * @param (string) accessToken - Description
+     * @param (string) refreshToken - Description
+     * @param (string) syncType - Description
      */
 
     async createProcessingJob(params) {
@@ -144,29 +177,52 @@ module.exports = function SkyAPI({
       let query = {}
       let body = {}
 
-      if (params['id'] !== undefined) {
-        path = path.replace('{' + 'id' + '}', params['id'])
+      if (params['uuid'] !== undefined) {
+        path = path.replace('{' + 'uuid' + '}', params['uuid'])
       }
 
-      return request({
-        method,
-        path,
-        query,
-        body
-      })
-    },
+      if (params['type'] !== undefined) {
+        body['type'] = params['type']
+      }
 
-    async getProcessingResults({
-      puuid,
-      layers
-    }) {
-      let method = 'GET'
-      let path = `/v1/processes/${puuid}/result`
-      let query = {}
-      let body = {}
+      if (params['ccrs'] !== undefined) {
+        body['ccrs'] = params['ccrs']
+      }
 
-      if (layers) {
-        query.layers = true
+      if (params['options'] !== undefined) {
+        body['options'] = params['options']
+      }
+
+      if (params['containerName'] !== undefined) {
+        body['containerName'] = params['containerName']
+      }
+
+      if (params['prefix'] !== undefined) {
+        body['prefix'] = params['prefix']
+      }
+
+      if (params['pointCloudColumnOrder'] !== undefined) {
+        body['pointCloudColumnOrder'] = params['pointCloudColumnOrder']
+      }
+
+      if (params['connectionString'] !== undefined) {
+        body['connectionString'] = params['connectionString']
+      }
+
+      if (params['resourceOwnerId'] !== undefined) {
+        body['resourceOwnerId'] = params['resourceOwnerId']
+      }
+
+      if (params['accessToken'] !== undefined) {
+        body['accessToken'] = params['accessToken']
+      }
+
+      if (params['refreshToken'] !== undefined) {
+        body['refreshToken'] = params['refreshToken']
+      }
+
+      if (params['syncType'] !== undefined) {
+        body['syncType'] = params['syncType']
       }
 
       return request({
