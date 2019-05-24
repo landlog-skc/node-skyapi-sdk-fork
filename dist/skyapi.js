@@ -3,6 +3,7 @@
 const fetch = require('@zeit/fetch-retry')(require('node-fetch'))
 const qs = require('qs')
 const jws = require('jws')
+const debug = require('debug')
 
 /*
   Example values:
@@ -83,13 +84,20 @@ module.exports = function SkyAPI({
       body: Object.keys(body).length ? body : undefined,
     }
 
+    debug('skyapi:sdk:request')(url)
+    debug('skyapi:sdk:request')(options)
     const res = await fetch(url, options)
 
-    if (/^(4|5)/.test(res.status)) {
-      throw new Error(await res.text())
-    }
+    const json = await res.json()
+    debug('skyapi:sdk:response:status')(res.status, res.statusText)
+    debug('skyapi:sdk:response:headers')(res.headers)
+    debug('skyapi:sdk:response:body')(json)
 
-    return res.json()
+    if (/^(4|5)/.test(res.status)) {
+      throw new Error(JSON.stringify(json))
+    } else {
+      return json
+    }
   }
 
   return {

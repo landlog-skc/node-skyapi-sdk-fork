@@ -31,5 +31,15 @@ You can add manually a not [Open API] compliant v1 lambda:
 3. Include your partial in `codegen/templates/main.js`
 4. Execute `npm run build:sdk`
 
+### Debug Logs
+
+Enable [debug] logs:
+
+- `skyapi:sdk:request` - the request made by SkyAPI SDK
+- `skyapi:sdk:response:status` - the response received by SkyAPI SDK
+- `skyapi:sdk:response:headers` - the response received by SkyAPI SDK
+- `skyapi:sdk:response:body` - the response received by SkyAPI SDK
+
 
   [Open API]: https://swagger.io/specification/
+  [debug]: https://www.npmjs.com/package/debug
