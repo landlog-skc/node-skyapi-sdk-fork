@@ -3,9 +3,10 @@
   "info": {
     "title": "SkyAPI",
     "version": "2.0.0",
-    "description": "Fill in the rest of the info https://swagger.io/specification/",
+    "description": "Management layer on top of AWS and Processing Pipeline",
     "termsOfService": "https://skycatch.com/terms/",
     "contact": {
+      "url": "https://skycatch.com/contacts/",
       "email": "api@skycatch.com"
     },
     "license": {
@@ -14,8 +15,8 @@
     }
   },
   "externalDocs": {
-    "description": "This is going to be a link to the generated docs",
-    "url": "https://docs.skycatch.com/v2.0.0/reference"
+    "url": "https://docs.skycatch.com/v2.0.0/reference",
+    "description": "SkyAPI Documentation"
   },
   "servers": [
     {
@@ -32,7 +33,7 @@
           "dataset"
         ],
         "summary": "Creates a dataset",
-        "description": "Long Description",
+        "description": "Creates a new dataset in the customer's account",
         "operationId": "createDataset",
         "parameters": [
           {

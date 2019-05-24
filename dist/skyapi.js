@@ -127,7 +127,7 @@ module.exports = function SkyAPI({
 
     /**
      * Creates a dataset
-     * Long Description
+     * Creates a new dataset in the customer&#39;s account
      * @method
      * @name createDataset
      * @param (string) token - User access token
