@@ -20,6 +20,6 @@ paths:
   /datasets:
     post:
       $ref: '../node_modules/lambda-api-datasets-post-v2/spec/lambda.yml'
-  /datasets/{id}/processes:
+  /datasets/{uuid}/processes:
     post:
       $ref: '../node_modules/lambda-api-datasets-processes-post-v2/spec/lambda.yml'
