@@ -166,6 +166,7 @@ module.exports = function SkyAPI({
      * @method
      * @name createProcessingJob
      * @param (string) uuid - Dataset ID
+     * @param (boolean) dryrun - Create processing job entry without starting the job
      * @param (string) type - Type of process to run
      * @param (object) ccrs - The definition of the custom coordinate reference system used to generate outputs and parse inputs
      * @param (object) options - Option flags to trigger custom behavior
@@ -181,12 +182,16 @@ module.exports = function SkyAPI({
 
     async createProcessingJob(params) {
       let method = 'post'.toUpperCase()
-      let path = `/v${version || 2}` + '/datasets/{id}/processes'
+      let path = `/v${version || 2}` + '/datasets/{uuid}/processes'
       let query = {}
       let body = {}
 
       if (params['uuid'] !== undefined) {
         path = path.replace('{' + 'uuid' + '}', params['uuid'])
+      }
+
+      if (params['dryrun'] !== undefined) {
+        body['dryrun'] = params['dryrun']
       }
 
       if (params['type'] !== undefined) {

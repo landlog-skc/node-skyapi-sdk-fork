@@ -111,7 +111,7 @@ paths:
         '404':
           description: Not Found
           content: {}
-  '/datasets/{id}/processes':
+  '/datasets/{uuid}/processes':
     post:
       tags:
         - processing_job
@@ -131,6 +131,9 @@ paths:
           application/json:
             schema:
               properties:
+                dryrun:
+                  type: boolean
+                  description: Create processing job entry without starting the job
                 type:
                   type: string
                   description: Type of process to run
