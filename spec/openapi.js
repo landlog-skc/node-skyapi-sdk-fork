@@ -5,7 +5,7 @@ const schema = require('openapi-schema-validation')
 
 module.exports = async ({spec}) => {
   const doc = await parser.parse(spec)
-  const definition = await parser.dereference(doc)
+  const definition = await parser.dereference(spec)
 
   // because $ref is not allowed inside
   // https://swagger.io/specification/#operationObject
