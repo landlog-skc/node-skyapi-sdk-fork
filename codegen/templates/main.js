@@ -55,17 +55,16 @@ module.exports = function SkyAPI ({origin, auth0, key, secret, audience, token, 
       path += `?${qs.stringify(query)}`
     }
 
-    if (Object.keys(body).length) {
-      body = JSON.stringify(body)
+    if (/put|post|patch/.test(method)) {
       headers['content-type'] = 'application/json'
+      body = JSON.stringify(body)
+    }
+    else {
+      body = undefined
     }
 
     const url = origin + path
-    const options = {
-      method,
-      headers,
-      body: Object.keys(body).length ? body : undefined,
-    }
+    const options = {method, headers, body}
 
     debug('skyapi:sdk:request')(url)
     debug('skyapi:sdk:request')(options)
