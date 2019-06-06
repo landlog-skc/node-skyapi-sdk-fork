@@ -39,7 +39,7 @@ module.exports = function SkyAPI ({origin, auth0, key, secret, audience, token, 
   }
 
   const request = async ({method, path, query, body}) => {
-    if (!token && client_id && client_secret) {
+    if (!token && key && secret) {
       token = await refresh()
     }
 
