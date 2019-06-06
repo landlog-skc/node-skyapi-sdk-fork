@@ -57,7 +57,7 @@ module.exports = function SkyAPI ({origin, auth0, key, secret, audience, token, 
       path += `?${qs.stringify(query)}`
     }
 
-    if (/put|post|patch/.test(method)) {
+    if (/put|post|patch/i.test(method)) {
       headers['content-type'] = 'application/json'
       body = JSON.stringify(body)
     }
