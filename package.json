@@ -22,7 +22,7 @@
     "swagger-parser": "^6.0.5"
   },
   "devDependencies": {
-    "@skycatch/lambda-api-datasets-post-v2": "github:skycatch/lambda-api-datasets-post-v2",
-    "@skycatch/lambda-api-datasets-processes-post-v2": "github:skycatch/lambda-api-datasets-processes-post-v2"
+    "@skycatch/skyapi-datasets-post": "github:skycatch/skyapi-datasets-post",
+    "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post"
   }
 }

@@ -19,7 +19,7 @@ servers:
 paths:
   /datasets:
     post:
-      $ref: '../node_modules/lambda-api-datasets-post-v2/spec/lambda.yml'
+      $ref: '../node_modules/@skycatch/skyapi-datasets-post/spec/lambda.yml'
   /datasets/{uuid}/processes:
     post:
-      $ref: '../node_modules/lambda-api-datasets-processes-post-v2/spec/lambda.yml'
+      $ref: '../node_modules/@skycatch/skyapi-datasets-processes-post/spec/lambda.yml'
