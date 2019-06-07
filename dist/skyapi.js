@@ -52,36 +52,40 @@ module.exports = function SkyAPI({
     query,
     body
   }) => {
-    if (!token) {
-      token = await refresh()
-    }
-    const {
-      payload: {
-        exp
-      }
-    } = jws.decode(token)
-    if (Date.now() >= exp * 1000) {
+    if (!token && key && secret) {
       token = await refresh()
     }
 
-    const headers = {
-      authorization: `Bearer ${token}`
+    let headers = {}
+
+    if (token) {
+      const {
+        payload: {
+          exp
+        }
+      } = jws.decode(token)
+      if (Date.now() >= exp * 1000) {
+        token = await refresh()
+      }
+      headers.authorization = `Bearer ${token}`
     }
 
     if (Object.keys(query).length) {
       path += `?${qs.stringify(query)}`
     }
 
-    if (Object.keys(body).length) {
-      body = JSON.stringify(body)
+    if (/put|post|patch/i.test(method)) {
       headers['content-type'] = 'application/json'
+      body = JSON.stringify(body)
+    } else {
+      body = undefined
     }
 
     const url = origin + path
     const options = {
       method,
       headers,
-      body: Object.keys(body).length ? body : undefined,
+      body
     }
 
     debug('skyapi:sdk:request')(url)
