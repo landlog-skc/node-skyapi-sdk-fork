@@ -4,7 +4,6 @@ const schema = require('openapi-schema-validation')
 
 
 module.exports = async ({spec}) => {
-  const doc = await parser.parse(spec)
   const definition = await parser.dereference(spec)
 
   // because $ref is not allowed inside
@@ -19,7 +18,7 @@ module.exports = async ({spec}) => {
       ), obj), {}
     )
 
-  const {valid, errors} = schema.validate(doc, 3)
+  const {valid, errors} = schema.validate(definition, 3)
   if (!valid) {
     console.log(`
       Document is not valid OpenAPI, ${errors.length} validation errors
