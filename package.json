@@ -4,6 +4,7 @@
   "description": "Node SDK to interact with SkyAPI",
   "main": "./dist/skyapi.js",
   "scripts": {
+    "build": "npm run build:sdk && npm run build:json && npm run build:yaml",
     "build:sdk": "node bin/build.js sdk",
     "build:json": "node bin/build.js json",
     "build:yaml": "node bin/build.js yaml"

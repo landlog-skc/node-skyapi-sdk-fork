@@ -12,6 +12,7 @@ All outputs go inside the `dist/` folder:
 npm run build:json
 npm run build:yaml
 npm run build:sdk
+npm run build # all
 ```
 
 
