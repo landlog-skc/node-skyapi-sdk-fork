@@ -6,21 +6,20 @@ const jws = require('jws')
 const debug = require('debug')
 
 /*
-  Example values:
-  origin:
-    - https://staging-gemba.skycatch.com/v1
-    - https://api.skycatch.com/v1
-  audience:
-    - datahub-api.skycatch.com/data_processing
-    - https://api.skycatch.com/
-  auth0:
-    - https://skycatch-development.auth0.com/v1
-    - https://skycatch-staging.auth0.com/v1
+  origin   : http://localhost:3000
+  domain   : staging-gemba.skycatch.com, staging-api.skycatch.com
+  tenant   : skycatch-development.auth0.com, skycatch-staging.auth0.com
+  key      : the app key
+  secret   : the app secret
+  audience : stage.datahub-api.skycatch.net/data_processing
+  token    : access token to use instead of acquiring one using the key and the secret
+  version  : the SkyAPI version to use - 2, 1
 */
 
 module.exports = function SkyAPI({
   origin,
-  auth0,
+  domain,
+  tenant,
   key,
   secret,
   audience,
@@ -29,7 +28,7 @@ module.exports = function SkyAPI({
 }) {
 
   const refresh = async () => {
-    const res = await fetch(`${auth0}/oauth/token`, {
+    const res = await fetch(origin || `https://${tenant}/v1/oauth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -81,7 +80,7 @@ module.exports = function SkyAPI({
       body = undefined
     }
 
-    const url = origin + path
+    const url = (origin || `https://${domain}`) + path
     const options = {
       method,
       headers,
@@ -139,7 +138,7 @@ module.exports = function SkyAPI({
      * @param (string) name - Dataset name
      */
 
-    async createDataset(params) {
+    async createDataset(params = {}) {
       let method = 'post'.toUpperCase()
       let path = `/v${version || 2}` + '/datasets'
       let query = {}
@@ -184,7 +183,7 @@ module.exports = function SkyAPI({
      * @param (string) syncType - Description
      */
 
-    async createProcessingJob(params) {
+    async createProcessingJob(params = {}) {
       let method = 'post'.toUpperCase()
       let path = `/v${version || 2}` + '/datasets/{uuid}/processes'
       let query = {}
@@ -258,7 +257,7 @@ module.exports = function SkyAPI({
      * @param (number) lat - Latitude
      */
 
-    async getProjections(params) {
+    async getProjections(params = {}) {
       let method = 'get'.toUpperCase()
       let path = `/v${version || 2}` + '/projections'
       let query = {}
