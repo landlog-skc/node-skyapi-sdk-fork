@@ -3,7 +3,8 @@
 const fetch = require('@zeit/fetch-retry')(require('node-fetch'))
 const qs = require('qs')
 const jws = require('jws')
-const debug = require('debug')
+const pkg = require('../package.json')
+const debug = require('debug')(pkg.name)
 
 /*
   origin   : http://localhost:3000
@@ -87,14 +88,14 @@ module.exports = function SkyAPI({
       body
     }
 
-    debug('skyapi:sdk:request')(url)
-    debug('skyapi:sdk:request')(options)
+    debug.extend('request')(url)
+    debug.extend('request')(options)
     const res = await fetch(url, options)
 
     const json = await res.json()
-    debug('skyapi:sdk:response:status')(res.status, res.statusText)
-    debug('skyapi:sdk:response:headers')(res.headers)
-    debug('skyapi:sdk:response:body')(json)
+    debug.extend('response')(res.status, res.statusText)
+    debug.extend('response')(res.headers)
+    debug.extend('response')(json)
 
     if (/^(4|5)/.test(res.status)) {
       throw new Error(JSON.stringify(json))
