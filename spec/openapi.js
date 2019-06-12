@@ -1,10 +1,33 @@
 
+const fs = require('fs')
+const path = require('path')
 const parser = require('swagger-parser')
 const schema = require('openapi-schema-validation')
 
 
 module.exports = async ({spec}) => {
-  const definition = await parser.dereference(spec)
+
+  const definition = await parser.dereference(spec, {
+    // when not in tests @skycatch/skyapi-common-spec gets installed
+    // in the root node_modules folder by NPM
+    resolve: {
+      file: {
+        order: 1,
+        read: (file, next) => {
+          let fpath = file.url
+
+          if (process.env.NODE_ENV !== 'test') {
+            var index = fpath.indexOf('@skycatch/skyapi-common-spec')
+            if (index !== -1) {
+              fpath = path.resolve(__dirname, '../node_modules', fpath.slice(index))
+            }
+          }
+
+          fs.readFile(fpath, 'utf8', next)
+        }
+      }
+    }
+  })
 
   // because $ref is not allowed inside
   // https://swagger.io/specification/#operationObject
