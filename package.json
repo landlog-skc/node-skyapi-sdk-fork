@@ -7,7 +7,10 @@
     "build": "npm run build:sdk && npm run build:json && npm run build:yaml",
     "build:sdk": "node bin/build.js sdk",
     "build:json": "node bin/build.js json",
-    "build:yaml": "node bin/build.js yaml"
+    "build:yaml": "node bin/build.js yaml",
+    "test": "npm run build:sdk && npm run test:ci",
+    "test:ci": "NODE_ENV=test tap ./test/**/*.spec.js --cov",
+    "test:cov": "NODE_ENV=test tap ./test/**/*.spec.js --cov --coverage-report=html"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +28,7 @@
   "devDependencies": {
     "@skycatch/skyapi-datasets-post": "github:skycatch/skyapi-datasets-post",
     "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post",
-    "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get"
+    "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get",
+    "tap": "^13.1.10"
   }
 }
