@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@skycatch/skyapi-datasets-post": "github:skycatch/skyapi-datasets-post",
-    "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post"
+    "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post",
+    "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get"
   }
 }

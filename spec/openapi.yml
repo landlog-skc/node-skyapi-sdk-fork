@@ -23,3 +23,6 @@ paths:
   /datasets/{uuid}/processes:
     post:
       $ref: '../node_modules/@skycatch/skyapi-datasets-processes-post/spec/lambda.yml'
+  /projections:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-projections-get/spec/lambda.yml'
