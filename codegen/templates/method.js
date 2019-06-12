@@ -8,7 +8,7 @@
 {{/parameters}}
 */
 
-async {{operationId}} (params) {
+async {{operationId}} (params = {}) {
   let method = '{{method}}'.toUpperCase()
   let path = `/v${version || 2}` + '{{&endpoint}}'
   let query = {}
