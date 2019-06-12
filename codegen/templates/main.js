@@ -19,7 +19,7 @@ const debug = require('debug')
 module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience, token, version}) {
 
   const refresh = async () => {
-    const res = await fetch(origin || `https://${tenant}/v1/oauth/token`, {
+    const res = await fetch((origin || `https://${tenant}`) + '/v1/oauth/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -35,7 +35,7 @@ describe('client', () => {
       req.on('end', () => {
         body = JSON.parse(body)
         // refresh
-        if (body.grant_type === 'client_credentials') {
+        if (req.url.includes('/v1/oauth/token')) {
           res.end(JSON.stringify({
             access_token: token({
               exp: Math.floor((Date.now() + 5000) / 1000),
@@ -45,7 +45,7 @@ describe('client', () => {
           }))
         }
         // dataset
-        else {
+        else if (req.url.includes('/v2/datasets')) {
           const jwt = jws.decode(req.headers.authorization.replace('Bearer ', ''))
           res.end(JSON.stringify(jwt.payload))
         }
