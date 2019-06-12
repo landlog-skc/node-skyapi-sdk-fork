@@ -1,10 +1,10 @@
 /**
-* {{summary}}
-* {{description}}
+* {{{summary}}}
+* {{{description}}}
 * @method
 * @name {{operationId}}
 {{#parameters}}
-* @param ({{type}}) {{name}} - {{description}}
+* @param ({{type}}) {{name}} - {{{description}}}
 {{/parameters}}
 */
 
