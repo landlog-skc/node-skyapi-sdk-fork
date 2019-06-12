@@ -10,7 +10,8 @@
     "build:yaml": "node bin/build.js yaml",
     "test": "npm run build:sdk && npm run test:ci",
     "test:ci": "NODE_ENV=test tap ./test/**/*.spec.js --cov",
-    "test:cov": "NODE_ENV=test tap ./test/**/*.spec.js --cov --coverage-report=html"
+    "test:cov": "NODE_ENV=test tap ./test/**/*.spec.js --cov --coverage-report=html",
+    "test:debug": "NODE_ENV=test DEBUG=@skycatch/* DEBUG_COLORS=true mocha --timeout 10000"
   },
   "author": "",
   "license": "ISC",
@@ -29,6 +30,7 @@
     "@skycatch/skyapi-datasets-post": "github:skycatch/skyapi-datasets-post",
     "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post",
     "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get",
-    "tap": "^13.1.10"
+    "mocha": "^6.1.4",
+    "tap": "^14.2.2"
   }
 }
