@@ -131,7 +131,7 @@ module.exports = function SkyAPI({
 
     /**
      * Creates a dataset
-     * Creates a new dataset in the customer&#39;s account
+     * Creates a new dataset in the customer's account
      * @method
      * @name createDataset
      * @param (string) token - User access token
@@ -240,6 +240,36 @@ module.exports = function SkyAPI({
 
       if (params['syncType'] !== undefined) {
         body['syncType'] = params['syncType']
+      }
+
+      return request({
+        method,
+        path,
+        query,
+        body
+      })
+    },
+    /**
+     * Get a list of known projections for a specific location (lat/lon)
+     * Get a list of known projections for a specific location (lat/lon)
+     * @method
+     * @name getProjections
+     * @param (number) lon - Longitude
+     * @param (number) lat - Latitude
+     */
+
+    async getProjections(params) {
+      let method = 'get'.toUpperCase()
+      let path = `/v${version || 2}` + '/projections'
+      let query = {}
+      let body = {}
+
+      if (params['lon'] !== undefined) {
+        query['lon'] = params['lon']
+      }
+
+      if (params['lat'] !== undefined) {
+        query['lat'] = params['lat']
       }
 
       return request({

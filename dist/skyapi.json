@@ -279,6 +279,199 @@
           }
         }
       }
+    },
+    "/projections": {
+      "get": {
+        "tags": [
+          "projections"
+        ],
+        "summary": "Get a list of known projections for a specific location (lat/lon)",
+        "description": "Get a list of known projections for a specific location (lat/lon)",
+        "operationId": "getProjections",
+        "parameters": [
+          {
+            "name": "lon",
+            "in": "query",
+            "description": "Longitude",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "nullable": true
+            }
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "description": "Latitude",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "Content-Type": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Content Type",
+                "required": true
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "required": [
+                        "statusCode",
+                        "requestId",
+                        "type",
+                        "data"
+                      ],
+                      "additionalProperties": false,
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "number",
+                          "description": "Response status code"
+                        },
+                        "requestId": {
+                          "type": "string",
+                          "description": "Request unique identifier"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Response data type"
+                        },
+                        "data": {
+                          "type": "object",
+                          "description": "Response data"
+                        }
+                      }
+                    },
+                    {
+                      "required": [
+                        "statusCode",
+                        "requestId",
+                        "next",
+                        "type",
+                        "data"
+                      ],
+                      "additionalProperties": false,
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "number",
+                          "description": "Response status code"
+                        },
+                        "requestId": {
+                          "type": "string",
+                          "description": "Request unique identifier"
+                        },
+                        "next": {
+                          "type": "string",
+                          "description": "Link to next set of items"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Response item data type"
+                        },
+                        "data": {
+                          "type": "array",
+                          "description": "List of items"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "headers": {
+              "Content-Type": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Content Type",
+                "required": true
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "statusCode",
+                    "requestId",
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "description": "Response status code"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Request unique identifier"
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error object or list of errors"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "5XX": {
+            "description": "Server error",
+            "headers": {
+              "Content-Type": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Content Type",
+                "required": true
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "statusCode",
+                    "requestId",
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "description": "Response status code"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Request unique identifier"
+                    },
+                    "error": {
+                      "type": "object",
+                      "description": "Error object or list of errors"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
