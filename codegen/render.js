@@ -13,6 +13,8 @@ const partials = {
   // until lambda function is migrated to Open API ..
   getProcessingResults:
     fs.readFileSync(path.resolve(__dirname, 'templates/get-processing-results.js'), 'utf8'),
+  getProcessingJob:
+    fs.readFileSync(path.resolve(__dirname, 'templates/get-processing-job.js'), 'utf8'),
 }
 
 module.exports = (view) =>
