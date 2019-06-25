@@ -13,6 +13,7 @@ async {{operationId}} (params = {}) {
   let path = `/v${version || 2}` + '{{&endpoint}}'
   let query = {}
   let body = {}
+  let security = {{security}}
 
   {{#parameters}}
 
@@ -36,5 +37,5 @@ async {{operationId}} (params = {}) {
 
   {{/parameters}}
 
-  return request({method, path, query, body})
+  return request({method, path, query, body, security})
 }
