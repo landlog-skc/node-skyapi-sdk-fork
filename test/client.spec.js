@@ -97,6 +97,20 @@ describe('client', () => {
     await skyapi.getProjections()
   })
 
+  it('do not add authorization header on missing security', async () => {
+    server.once('request', (req, res) => {
+      t.equal(req.headers.authorization, undefined)
+      t.equal(req.method, 'GET')
+      t.equal(req.url, '/v2/projections')
+      res.end(JSON.stringify({}))
+    })
+    const skyapi = SkyAPI({
+      origin,
+      token: token({exp: Math.floor((Date.now() + 5000) / 1000)}),
+    })
+    await skyapi.getProjections()
+  })
+
   it('append querystring to the URL', async () => {
     server.once('request', (req, res) => {
       t.equal(req.url, '/v2/projections?lon=1&lat=2')
