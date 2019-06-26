@@ -54,6 +54,9 @@ paths:
   /projections:
     get:
       $ref: '../node_modules/@skycatch/skyapi-projections-get/spec/lambda.yml'
+  /geoids:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-geoids-list/spec/lambda.yml'
   /designfiles/{uuid}:
     get:
       $ref: '../node_modules/@skycatch/skyapi-designfiles-get/spec/lambda.yml'
