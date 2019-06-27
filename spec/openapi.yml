@@ -14,8 +14,36 @@ externalDocs:
   url: https://docs.skycatch.com/v2.0.0/reference
   description: SkyAPI Documentation
 servers:
-  - url: https://api.skycatch.com/v2
-  - url: https://staging-gemba.skycatch.com/v2
+  - url: https://{environment}.skycatch.com/v2
+    variables:
+      environment:
+        description: The environment you are building the API for
+        enum:
+          - api         # prod
+          - staging-api # stage
+        default: api
+  - url: https://{tenant}.auth0.com/oauth/token
+    variables:
+      tenant:
+        description: The Auth0 tenant
+        enum:
+          - skycatch-development
+          - skycatch-staging
+          - skycatch-production
+        default: skycatch-development
+components:
+  securitySchemes:
+    auth0: # arbitrary name
+      name: auth0
+      type: oauth2
+      description: Used by organization apps
+      flows:
+        clientCredentials: # authorizationCode, implicit, password or clientCredentials)
+          tokenUrl: https://{tenant}.auth0.com/oauth/token
+          scopes: {}
+          # scopes:
+          #   read_pets: read your pets
+          #   write_pets: modify pets in your account
 paths:
   /datasets:
     post:

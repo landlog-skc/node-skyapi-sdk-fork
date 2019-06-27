@@ -37,19 +37,21 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     return json.access_token
   }
 
-  const request = async ({method, path, query, body}) => {
-    if (!token && key && secret) {
-      token = await refresh()
-    }
-
+  const request = async ({method, path, query, body, security}) => {
     let headers = {}
 
-    if (token) {
-      const {payload: {exp}} = jws.decode(token)
-      if (Date.now() >= exp * 1000) {
+    if (security) {
+      if (!token && key && secret) {
         token = await refresh()
       }
-      headers.authorization = `Bearer ${token}`
+
+      if (token) {
+        const {payload: {exp}} = jws.decode(token)
+        if (Date.now() >= exp * 1000) {
+          token = await refresh()
+        }
+        headers.authorization = `Bearer ${token}`
+      }
     }
 
     if (Object.keys(query).length) {
