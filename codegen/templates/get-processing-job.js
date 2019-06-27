@@ -4,6 +4,7 @@ async getProcessingJob ({puuid}) {
   let path = `/v1/processes/${puuid}`
   let query = {}
   let body = {}
+  let security = true
 
-  return request({method, path, query, body})
+  return request({method, path, query, body, security})
 }
