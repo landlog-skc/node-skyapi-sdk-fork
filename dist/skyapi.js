@@ -119,6 +119,7 @@ module.exports = function SkyAPI({
       let path = `/v1/processes/${puuid}/result`
       let query = {}
       let body = {}
+      let security = true
 
       if (layers) {
         query.layers = true
@@ -128,7 +129,8 @@ module.exports = function SkyAPI({
         method,
         path,
         query,
-        body
+        body,
+        security
       })
     },
 
@@ -139,12 +141,14 @@ module.exports = function SkyAPI({
       let path = `/v1/processes/${puuid}`
       let query = {}
       let body = {}
+      let security = true
 
       return request({
         method,
         path,
         query,
-        body
+        body,
+        security
       })
     },
 
