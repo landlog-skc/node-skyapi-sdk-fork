@@ -50,24 +50,27 @@ module.exports = function SkyAPI({
     method,
     path,
     query,
-    body
+    body,
+    security
   }) => {
-    if (!token && key && secret) {
-      token = await refresh()
-    }
-
     let headers = {}
 
-    if (token) {
-      const {
-        payload: {
-          exp
-        }
-      } = jws.decode(token)
-      if (Date.now() >= exp * 1000) {
+    if (security) {
+      if (!token && key && secret) {
         token = await refresh()
       }
-      headers.authorization = `Bearer ${token}`
+
+      if (token) {
+        const {
+          payload: {
+            exp
+          }
+        } = jws.decode(token)
+        if (Date.now() >= exp * 1000) {
+          token = await refresh()
+        }
+        headers.authorization = `Bearer ${token}`
+      }
     }
 
     if (Object.keys(query).length) {
@@ -150,9 +153,13 @@ module.exports = function SkyAPI({
      * Creates a new dataset in the customer's account
      * @method
      * @name createDataset
+     * @param (string) authorization - Organization's access token
      * @param (string) token - User access token
      * @param (string) userId - User identifier
      * @param (string) name - Dataset name
+     * @param (string) sourceId -  The source ID in the app creating the dataset. If passed in it will be used as the name for the s3 object dir in place of the DUUID. 
+     * @param (string) type - The dataset type
+     * @param (object) metadata - Metadata about the dataset
      */
 
     async createDataset(params = {}) {
@@ -160,6 +167,7 @@ module.exports = function SkyAPI({
       let path = `/v${version || 2}` + '/datasets'
       let query = {}
       let body = {}
+      let security = true
 
       if (params['token'] !== undefined) {
         query['token'] = params['token']
@@ -173,11 +181,24 @@ module.exports = function SkyAPI({
         body['name'] = params['name']
       }
 
+      if (params['sourceId'] !== undefined) {
+        body['sourceId'] = params['sourceId']
+      }
+
+      if (params['type'] !== undefined) {
+        body['type'] = params['type']
+      }
+
+      if (params['metadata'] !== undefined) {
+        body['metadata'] = params['metadata']
+      }
+
       return request({
         method,
         path,
         query,
-        body
+        body,
+        security
       })
     },
     /**
@@ -205,6 +226,7 @@ module.exports = function SkyAPI({
       let path = `/v${version || 2}` + '/datasets/{uuid}/processes'
       let query = {}
       let body = {}
+      let security = true
 
       if (params['uuid'] !== undefined) {
         path = path.replace('{' + 'uuid' + '}', params['uuid'])
@@ -262,7 +284,8 @@ module.exports = function SkyAPI({
         method,
         path,
         query,
-        body
+        body,
+        security
       })
     },
     /**
@@ -279,6 +302,7 @@ module.exports = function SkyAPI({
       let path = `/v${version || 2}` + '/projections'
       let query = {}
       let body = {}
+      let security = false
 
       if (params['lon'] !== undefined) {
         query['lon'] = params['lon']
@@ -292,7 +316,40 @@ module.exports = function SkyAPI({
         method,
         path,
         query,
-        body
+        body,
+        security
+      })
+    },
+    /**
+     * Get a list of known geoids for a specific location (lat/lon)
+     * Get a list of known geoids for a specific location (lat/lon)
+     * @method
+     * @name getGeoids
+     * @param (number) lon - Longitude
+     * @param (number) lat - Latitude
+     */
+
+    async getGeoids(params = {}) {
+      let method = 'get'.toUpperCase()
+      let path = `/v${version || 2}` + '/geoids'
+      let query = {}
+      let body = {}
+      let security = false
+
+      if (params['lon'] !== undefined) {
+        query['lon'] = params['lon']
+      }
+
+      if (params['lat'] !== undefined) {
+        query['lat'] = params['lat']
+      }
+
+      return request({
+        method,
+        path,
+        query,
+        body,
+        security
       })
     },
     /**
@@ -308,6 +365,7 @@ module.exports = function SkyAPI({
       let path = `/v${version || 2}` + '/designfiles/{uuid}'
       let query = {}
       let body = {}
+      let security = false
 
       if (params['uuid'] !== undefined) {
         path = path.replace('{' + 'uuid' + '}', params['uuid'])
@@ -317,7 +375,8 @@ module.exports = function SkyAPI({
         method,
         path,
         query,
-        body
+        body,
+        security
       })
     },
   }
