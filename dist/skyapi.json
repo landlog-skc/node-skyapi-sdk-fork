@@ -196,12 +196,16 @@
                           "type": "object",
                           "required": [
                             "id",
+                            "uuid",
                             "name",
                             "createdAt"
                           ],
                           "additionalProperties": false,
                           "properties": {
                             "id": {
+                              "type": "string"
+                            },
+                            "uuid": {
                               "type": "string"
                             },
                             "name": {
