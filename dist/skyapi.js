@@ -153,6 +153,43 @@ module.exports = function SkyAPI({
     },
 
     /**
+     * Creates a transform matrix for CCRS localization
+     * Parses a localization file to create a new transform matrix to be used in a compound coordinate reference system (CCRS)
+     * @method
+     * @name createCCRSLocalization
+     * @param (number) version - The version of the localization library to use when calculating the transform matrix
+     * @param (string) file - Localization data as base64 encoded binary
+     * @param (string) units - Parses a localization file to create a new transform matrix to be used in a compound coordinate reference system (CCRS)
+     */
+
+    async createCCRSLocalization(params = {}) {
+      let method = 'post'.toUpperCase()
+      let path = `/v${version || 2}` + '/ccrs/localization'
+      let query = {}
+      let body = {}
+      let security = false
+
+      if (params['version'] !== undefined) {
+        query['version'] = params['version']
+      }
+
+      if (params['file'] !== undefined) {
+        body['file'] = params['file']
+      }
+
+      if (params['units'] !== undefined) {
+        body['units'] = params['units']
+      }
+
+      return request({
+        method,
+        path,
+        query,
+        body,
+        security
+      })
+    },
+    /**
      * Creates a dataset
      * Creates a new dataset in the customer's account
      * @method
@@ -293,27 +330,22 @@ module.exports = function SkyAPI({
       })
     },
     /**
-     * Get a list of known projections for a specific location (lat/lon)
-     * Get a list of known projections for a specific location (lat/lon)
+     * Gets design files
+     * Retrieves processed design files for a dataset
      * @method
-     * @name getProjections
-     * @param (number) lon - Longitude
-     * @param (number) lat - Latitude
+     * @name getDesignFiles
+     * @param (string) uuid - Designfile identifier
      */
 
-    async getProjections(params = {}) {
+    async getDesignFiles(params = {}) {
       let method = 'get'.toUpperCase()
-      let path = `/v${version || 2}` + '/projections'
+      let path = `/v${version || 2}` + '/designfiles/{uuid}'
       let query = {}
       let body = {}
-      let security = false
+      let security = true
 
-      if (params['lon'] !== undefined) {
-        query['lon'] = params['lon']
-      }
-
-      if (params['lat'] !== undefined) {
-        query['lat'] = params['lat']
+      if (params['uuid'] !== undefined) {
+        path = path.replace('{' + 'uuid' + '}', params['uuid'])
       }
 
       return request({
@@ -357,22 +389,27 @@ module.exports = function SkyAPI({
       })
     },
     /**
-     * Gets design files
-     * Retrieves processed design files for a dataset
+     * Get a list of known projections for a specific location (lat/lon)
+     * Get a list of known projections for a specific location (lat/lon)
      * @method
-     * @name getDesignFiles
-     * @param (string) uuid - Designfile identifier
+     * @name getProjections
+     * @param (number) lon - Longitude
+     * @param (number) lat - Latitude
      */
 
-    async getDesignFiles(params = {}) {
+    async getProjections(params = {}) {
       let method = 'get'.toUpperCase()
-      let path = `/v${version || 2}` + '/designfiles/{uuid}'
+      let path = `/v${version || 2}` + '/projections'
       let query = {}
       let body = {}
-      let security = true
+      let security = false
 
-      if (params['uuid'] !== undefined) {
-        path = path.replace('{' + 'uuid' + '}', params['uuid'])
+      if (params['lon'] !== undefined) {
+        query['lon'] = params['lon']
+      }
+
+      if (params['lat'] !== undefined) {
+        query['lat'] = params['lat']
       }
 
       return request({
