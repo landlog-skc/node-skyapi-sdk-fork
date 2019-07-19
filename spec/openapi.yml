@@ -45,18 +45,21 @@ components:
           #   read_pets: read your pets
           #   write_pets: modify pets in your account
 paths:
+  /ccrs/localization:
+    post:
+      $ref: '../node_modules/@skycatch/skyapi-ccrs-localization-post/spec/lambda.yml'
   /datasets:
     post:
       $ref: '../node_modules/@skycatch/skyapi-datasets-post/spec/lambda.yml'
   /datasets/{uuid}/processes:
     post:
       $ref: '../node_modules/@skycatch/skyapi-datasets-processes-post/spec/lambda.yml'
-  /projections:
-    get:
-      $ref: '../node_modules/@skycatch/skyapi-projections-get/spec/lambda.yml'
-  /geoids:
-    get:
-      $ref: '../node_modules/@skycatch/skyapi-geoids-list/spec/lambda.yml'
   /designfiles/{uuid}:
     get:
       $ref: '../node_modules/@skycatch/skyapi-designfiles-get/spec/lambda.yml'
+  /geoids:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-geoids-list/spec/lambda.yml'
+  /projections:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-projections-get/spec/lambda.yml'

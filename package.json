@@ -27,6 +27,7 @@
     "swagger-parser": "^6.0.5"
   },
   "devDependencies": {
+    "@skycatch/skyapi-ccrs-localization-post": "github:skycatch/skyapi-ccrs-localization-post",
     "@skycatch/skyapi-datasets-post": "github:skycatch/skyapi-datasets-post",
     "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post",
     "@skycatch/skyapi-designfiles-get": "github:skycatch/skyapi-designfiles-get#release/v1.0.0",
