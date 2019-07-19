@@ -1,6 +1,6 @@
 {
   "name": "@skycatch/node-skyapi-sdk",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "Node SDK to interact with SkyAPI",
   "main": "./dist/skyapi.js",
   "scripts": {
@@ -29,7 +29,7 @@
   "devDependencies": {
     "@skycatch/skyapi-datasets-post": "github:skycatch/skyapi-datasets-post",
     "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post",
-    "@skycatch/skyapi-designfiles-get": "github:skycatch/skyapi-designfiles-get",
+    "@skycatch/skyapi-designfiles-get": "github:skycatch/skyapi-designfiles-get#release/v1.0.0",
     "@skycatch/skyapi-geoids-list": "github:skycatch/skyapi-geoids-list",
     "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get",
     "mocha": "^6.1.4",

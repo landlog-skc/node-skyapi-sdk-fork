@@ -361,7 +361,7 @@ module.exports = function SkyAPI({
      * Retrieves processed design files for a dataset
      * @method
      * @name getDesignFiles
-     * @param (string) uuid - Retrieves processed design files for a dataset
+     * @param (string) uuid - Designfile identifier
      */
 
     async getDesignFiles(params = {}) {
@@ -369,7 +369,7 @@ module.exports = function SkyAPI({
       let path = `/v${version || 2}` + '/designfiles/{uuid}'
       let query = {}
       let body = {}
-      let security = false
+      let security = true
 
       if (params['uuid'] !== undefined) {
         path = path.replace('{' + 'uuid' + '}', params['uuid'])
