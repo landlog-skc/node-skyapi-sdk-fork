@@ -389,6 +389,43 @@ module.exports = function SkyAPI({
       })
     },
     /**
+     * Something
+     * Something
+     * @method
+     * @name getGeoidsHeight
+     * @param (string) id - Geoid
+     * @param (number) lat - Latitude
+     * @param (number) lon - Longtitude
+     */
+
+    async getGeoidsHeight(params = {}) {
+      let method = 'get'.toUpperCase()
+      let path = `/v${version || 2}` + '/geoids/{id}/height'
+      let query = {}
+      let body = {}
+      let security = false
+
+      if (params['id'] !== undefined) {
+        path = path.replace('{' + 'id' + '}', params['id'])
+      }
+
+      if (params['lat'] !== undefined) {
+        query['lat'] = params['lat']
+      }
+
+      if (params['lon'] !== undefined) {
+        query['lon'] = params['lon']
+      }
+
+      return request({
+        method,
+        path,
+        query,
+        body,
+        security
+      })
+    },
+    /**
      * Get a list of known projections for a specific location (lat/lon)
      * Get a list of known projections for a specific location (lat/lon)
      * @method

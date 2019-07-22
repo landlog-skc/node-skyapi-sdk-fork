@@ -60,6 +60,9 @@ paths:
   /geoids:
     get:
       $ref: '../node_modules/@skycatch/skyapi-geoids-list/spec/lambda.yml'
+  /geoids/{id}/height:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-geoids-height-get/spec/lambda.yml'
   /projections:
     get:
       $ref: '../node_modules/@skycatch/skyapi-projections-get/spec/lambda.yml'

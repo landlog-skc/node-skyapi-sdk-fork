@@ -31,6 +31,7 @@
     "@skycatch/skyapi-datasets-post": "github:skycatch/skyapi-datasets-post",
     "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post",
     "@skycatch/skyapi-designfiles-get": "github:skycatch/skyapi-designfiles-get#release/v1.0.0",
+    "@skycatch/skyapi-geoids-height-get": "github:skycatch/skyapi-geoids-height-get",
     "@skycatch/skyapi-geoids-list": "github:skycatch/skyapi-geoids-list",
     "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get",
     "mocha": "^6.1.4",
