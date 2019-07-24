@@ -1,5 +1,5 @@
 
-async getProcessingResults ({puuid, layers}) {
+api.getProcessingResults = async ({puuid, layers}) => {
   let method = 'GET'
   let path = `/v1/processes/${puuid}/result`
   let query = {}

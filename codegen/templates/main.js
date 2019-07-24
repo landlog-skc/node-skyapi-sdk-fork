@@ -18,8 +18,9 @@ const debug = require('debug')(pkg.name)
 */
 
 module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience, token, version}) {
+  const api = {}
 
-  const refresh = async () => {
+  api.refresh = async () => {
     const res = await fetch((origin || `https://${tenant}`) + '/v1/oauth/token', {
       method: 'POST',
       headers: {
@@ -44,18 +45,18 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     return json.access_token
   }
 
-  const request = async ({method, path, query, body, security}) => {
+  api.request = async ({method, path, query, body, security}) => {
     let headers = {}
 
     if (security) {
       if (!token && key && secret) {
-        token = await refresh()
+        token = await api.refresh()
       }
 
       if (token) {
         const {payload: {exp}} = jws.decode(token)
         if (Date.now() >= exp * 1000) {
-          token = await refresh()
+          token = await api.refresh()
         }
         headers.authorization = `Bearer ${token}`
       }
@@ -93,15 +94,14 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     }
   }
 
-  return {
-    refresh,
-    request,
+  // v1 temporary methods
+  {{>getProcessingResults}}
+  {{>getProcessingJob}}
 
-    {{>getProcessingResults}},
-    {{>getProcessingJob}},
+  // v2 methods
+  {{#methods}}
+    {{>method}}
+  {{/methods}}
 
-    {{#methods}}
-      {{>method}},
-    {{/methods}}
-  }
+  return api
 }
