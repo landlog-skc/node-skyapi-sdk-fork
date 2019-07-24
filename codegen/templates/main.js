@@ -34,6 +34,13 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     })
 
     const json = await res.json()
+    debug.extend('auth-refresh')(res.status, res.statusText)
+    debug.extend('auth-refresh')(json)
+
+    if (/^(4|5)/.test(res.status)) {
+      throw new Error(JSON.stringify(json))
+    }
+
     return json.access_token
   }
 
