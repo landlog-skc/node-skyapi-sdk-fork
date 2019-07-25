@@ -1,5 +1,5 @@
 
-async getProcessingJob ({puuid}) {
+api.getProcessingJob = async ({puuid}) => {
   let method = 'GET'
   let path = `/v1/processes/${puuid}`
   let query = {}

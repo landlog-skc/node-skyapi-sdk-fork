@@ -82,6 +82,25 @@ describe('client', () => {
       t.equal(res.key, 'key 2')
       t.equal(res.secret, 'secret 2')
     })
+
+    it('stub out internals', async () => {
+      // instance
+      const skyapi = SkyAPI({
+        origin,
+        key: 'key 1',
+        secret: 'secret 1'
+      })
+      // stub
+      skyapi.refresh = async () => token({
+        exp: Math.floor((Date.now() + 5000) / 1000),
+        key: 'stub key',
+        secret: 'stub secret'
+      })
+      // test
+      const res = await skyapi.createDataset()
+      t.equal(res.key, 'stub key')
+      t.equal(res.secret, 'stub secret')
+    })
   })
 
   it('do not add authorization header on missing credentials', async () => {
