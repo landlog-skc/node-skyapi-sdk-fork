@@ -131,7 +131,7 @@ module.exports = function SkyAPI({
       query.layers = true
     }
 
-    return request({
+    return api.request({
       method,
       path,
       query,
@@ -149,7 +149,7 @@ module.exports = function SkyAPI({
     let body = {}
     let security = true
 
-    return request({
+    return api.request({
       method,
       path,
       query,
