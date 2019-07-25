@@ -6,5 +6,5 @@ api.getProcessingJob = async ({puuid}) => {
   let body = {}
   let security = true
 
-  return request({method, path, query, body, security})
+  return api.request({method, path, query, body, security})
 }

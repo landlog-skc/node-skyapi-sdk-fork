@@ -10,5 +10,5 @@ api.getProcessingResults = async ({puuid, layers}) => {
     query.layers = true
   }
 
-  return request({method, path, query, body, security})
+  return api.request({method, path, query, body, security})
 }
