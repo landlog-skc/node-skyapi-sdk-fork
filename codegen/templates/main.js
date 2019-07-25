@@ -63,7 +63,7 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     }
 
     if (Object.keys(query).length) {
-      path += `?${qs.stringify(query)}`
+      path += `?${qs.stringify(query, {arrayFormat: 'repeat'})}`
     }
 
     if (/put|post|patch/i.test(method)) {
