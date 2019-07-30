@@ -4,7 +4,9 @@ const fetch = require('@zeit/fetch-retry')(require('node-fetch'))
 const qs = require('qs')
 const jws = require('jws')
 const pkg = require('../package.json')
-const debug = require('debug')(pkg.name)
+const debug = require('debug')(
+  process.env.NODE_ENV === 'test' ? '@skycatch/node-skyapi-sdk' : pkg.name
+)
 
 /*
   origin   : http://localhost:3000
