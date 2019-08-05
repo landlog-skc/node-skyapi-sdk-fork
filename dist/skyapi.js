@@ -252,6 +252,33 @@ module.exports = function SkyAPI({
     })
   }
   /**
+   * Gets a list of jobs
+   * Gets a list of jobs
+   * @method
+   * @name listProcessingJobs
+   * @param (string) uuid - Dataset ID
+   */
+
+  api.listProcessingJobs = async (params = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/datasets/{uuid}/processes'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
    * Start processing a dataset
    * Initiates the processing of images or a point cloud in the dataset
    * @method
