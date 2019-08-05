@@ -29,6 +29,7 @@
   "devDependencies": {
     "@skycatch/skyapi-ccrs-localization-post": "github:skycatch/skyapi-ccrs-localization-post",
     "@skycatch/skyapi-datasets-post": "github:skycatch/skyapi-datasets-post",
+    "@skycatch/skyapi-datasets-processes-list": "github:skycatch/skyapi-datasets-processes-list",
     "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post",
     "@skycatch/skyapi-designfiles-get": "github:skycatch/skyapi-designfiles-get#release/v1.0.0",
     "@skycatch/skyapi-geoids-height-get": "github:skycatch/skyapi-geoids-height-get",

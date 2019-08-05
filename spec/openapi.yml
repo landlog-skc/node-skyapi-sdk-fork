@@ -52,6 +52,8 @@ paths:
     post:
       $ref: '../node_modules/@skycatch/skyapi-datasets-post/spec/lambda.yml'
   /datasets/{uuid}/processes:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-datasets-processes-list/spec/lambda.yml'
     post:
       $ref: '../node_modules/@skycatch/skyapi-datasets-processes-post/spec/lambda.yml'
   /designfiles/{uuid}:
