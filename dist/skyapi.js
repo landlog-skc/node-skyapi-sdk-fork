@@ -205,7 +205,6 @@ module.exports = function SkyAPI({
    * @name createDataset
    * @param (string) authorization - Organization's access token
    * @param (string) token - User access token
-   * @param (string) userId - User identifier
    * @param (string) name - Dataset name
    * @param (string) sourceId -  The source ID in the app creating the dataset. If passed in it will be used as the name for the s3 object dir in place of the DUUID. 
    * @param (string) type - The dataset type
@@ -221,10 +220,6 @@ module.exports = function SkyAPI({
 
     if (params['token'] !== undefined) {
       query['token'] = params['token']
-    }
-
-    if (params['userId'] !== undefined) {
-      query['userId'] = params['userId']
     }
 
     if (params['name'] !== undefined) {
