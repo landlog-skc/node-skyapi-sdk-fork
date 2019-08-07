@@ -119,29 +119,6 @@ module.exports = function SkyAPI({
 
   // v1 temporary methods
 
-  api.getProcessingResults = async ({
-    puuid,
-    layers
-  }) => {
-    let method = 'GET'
-    let path = `/v1/processes/${puuid}/result`
-    let query = {}
-    let body = {}
-    let security = true
-
-    if (layers) {
-      query.layers = true
-    }
-
-    return api.request({
-      method,
-      path,
-      query,
-      body,
-      security
-    })
-  }
-
   api.getProcessingJob = async ({
     puuid
   }) => {
@@ -446,6 +423,43 @@ module.exports = function SkyAPI({
 
     if (params['lon'] !== undefined) {
       query['lon'] = params['lon']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
+   * List Processing Job Results
+   * List Processing Job Results
+   * @method
+   * @name getProcessingResults
+   * @param (string) uuid - Processing Job ID
+   * @param (boolean) layers - Toggle layers in response object
+   * @param (array) exportTypes - Export Types
+   */
+
+  api.getProcessingResults = async (params = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/processes/{uuid}/result'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['layers'] !== undefined) {
+      query['layers'] = params['layers']
+    }
+
+    if (params['exportTypes'] !== undefined) {
+      query['exportTypes'] = params['exportTypes']
     }
 
     return api.request({

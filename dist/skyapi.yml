@@ -1320,6 +1320,171 @@ paths:
           content:
             application/json:
               schema: *ref_7
+  '/processes/{uuid}/result':
+    get:
+      tags:
+        - dataset
+      summary: List Processing Job Results
+      description: List Processing Job Results
+      operationId: getProcessingResults
+      security:
+        - auth0: []
+      parameters:
+        - name: uuid
+          in: path
+          description: Processing Job ID
+          required: false
+          schema:
+            type: string
+        - name: layers
+          in: query
+          description: Toggle layers in response object
+          required: false
+          schema:
+            type: boolean
+        - name: exportTypes
+          in: query
+          description: Export Types
+          required: false
+          schema:
+            type: array
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      type:
+                        type: string
+                        description: Response data type
+                      data:
+                        type: object
+                        description: Response data
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          files:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                key:
+                                  type: string
+                                  description: File path
+                                name:
+                                  type: string
+                                  description: File name
+                                type:
+                                  type: string
+                                resolution:
+                                  type: string
+                                projection:
+                                  type: string
+                                bucket:
+                                  type: string
+                                url:
+                                  type: string
+                                expires:
+                                  type: number
+                                size:
+                                  type: number
+                                lastModified:
+                                  type: string
+                                storageClass:
+                                  type: string
+                                eTag:
+                                  type: string
+                          layers:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                type:
+                                  type: string
+                                bucket:
+                                  type: string
+                                path:
+                                  type: string
+                                url:
+                                  type: string
+                                expires:
+                                  type: number
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_8
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_8
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_8
   /projections:
     get:
       tags:
@@ -1436,7 +1601,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_8
+              schema: &ref_9
                 required:
                   - statusCode
                   - requestId
@@ -1472,7 +1637,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_9
         5XX:
           description: Server Error
           headers:
@@ -1490,4 +1655,4 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_9
