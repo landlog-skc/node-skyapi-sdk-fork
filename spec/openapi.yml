@@ -65,6 +65,9 @@ paths:
   /geoids/{id}/height:
     get:
       $ref: '../node_modules/@skycatch/skyapi-geoids-height-get/spec/lambda.yml'
+  /processes/{uuid}/result:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-processing-result-get/spec/lambda.yml'
   /projections:
     get:
       $ref: '../node_modules/@skycatch/skyapi-projections-get/spec/lambda.yml'
