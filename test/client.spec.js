@@ -83,32 +83,6 @@ describe('client', () => {
       t.equal(res.secret, 'secret 2')
     })
 
-    it('expose token and expiration on provided token', async () => {
-      const skyapi = SkyAPI({
-        origin,
-        token: token({exp: Math.floor((Date.now() + 5000) / 1000)}),
-        key: 'key 1',
-        secret: 'secret 1',
-        expose: true
-      })
-      t.ok(typeof skyapi.token === 'string')
-      t.ok(typeof skyapi.expiration === 'number')
-    })
-
-    it('expose token and expiration on refresh', async () => {
-      const skyapi = SkyAPI({
-        origin,
-        key: 'key 1',
-        secret: 'secret 1',
-        expose: true
-      })
-      t.ok(skyapi.token === undefined)
-      t.ok(skyapi.expiration === undefined)
-      await skyapi.createDataset()
-      t.ok(typeof skyapi.token === 'string')
-      t.ok(typeof skyapi.expiration === 'number')
-    })
-
     it('stub out internals', async () => {
       // instance
       const skyapi = SkyAPI({
