@@ -48,6 +48,9 @@ paths:
   /ccrs/localization:
     post:
       $ref: '../node_modules/@skycatch/skyapi-ccrs-localization-post/spec/lambda.yml'
+  /credentials:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-credentials-get/spec/lambda.yml'
   /datasets:
     post:
       $ref: '../node_modules/@skycatch/skyapi-datasets-post/spec/lambda.yml'
