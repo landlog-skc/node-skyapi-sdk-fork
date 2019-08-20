@@ -17,6 +17,7 @@ const debug = require('debug')(
   audience : stage.datahub-api.skycatch.net/data_processing
   token    : access token to use instead of acquiring one using the key and the secret
   version  : the SkyAPI version to use - 2, 1
+  expose   : expose the cached access token and its expiration
 */
 
 module.exports = function SkyAPI({
@@ -27,9 +28,20 @@ module.exports = function SkyAPI({
   secret,
   audience,
   token,
-  version
+  version,
+  expose
 }) {
   const api = {}
+
+  if (token && expose) {
+    const {
+      payload: {
+        exp
+      }
+    } = jws.decode(token)
+    api.token = token
+    api.expiration = exp * 1000
+  }
 
   api.refresh = async () => {
     const res = await fetch((origin || `https://${tenant}`) + '/v1/oauth/token', {
@@ -80,6 +92,10 @@ module.exports = function SkyAPI({
           token = await api.refresh()
         }
         headers.authorization = `Bearer ${token}`
+        if (expose) {
+          api.token = token
+          api.expiration = exp * 1000
+        }
       }
     }
 
