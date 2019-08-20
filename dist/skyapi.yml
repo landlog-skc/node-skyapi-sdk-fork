@@ -249,6 +249,194 @@ paths:
           content:
             application/json:
               schema: *ref_1
+  /credentials:
+    get:
+      tags:
+        - credentials
+      summary: Get STS credentials
+      description: Get STS credentials
+      operationId: getCredentials
+      security:
+        - auth0: []
+      parameters:
+        - name: authorization
+          in: header
+          description: Organization's access token
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Credentials type
+          required: true
+          schema:
+            type: string
+        - name: duuid
+          in: query
+          description: Dataset UUID
+          required: false
+          schema:
+            type: string
+        - name: puuid
+          in: query
+          description: Processing Job UUID
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      type:
+                        type: string
+                        description: Response data type
+                      data:
+                        type: object
+                        description: Response data
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - accessKeyId
+                          - secretAccessKey
+                          - sessionToken
+                          - expiration
+                        additionalProperties: false
+                        properties:
+                          accessKeyId:
+                            type: string
+                          secretAccessKey:
+                            type: string
+                          sessionToken:
+                            type: string
+                          expiration:
+                            type: string
+                  - type: object
+                    properties:
+                      meta:
+                        type: object
+                        properties:
+                          buckets:
+                            type: array
+                            description: Returned only for `file-manager` credentils type
+                            items:
+                              type: object
+                              required:
+                                - bucket
+                                - prefix
+                                - access
+                              additionalProperties: false
+                              properties:
+                                bucket:
+                                  type: string
+                                prefix:
+                                  type: string
+                                access:
+                                  type: string
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_2
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_2
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_2
   /datasets:
     post:
       tags:
@@ -398,7 +586,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: &ref_2
+              schema: &ref_3
                 required:
                   - statusCode
                   - requestId
@@ -430,7 +618,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_2
+              schema: *ref_3
   '/datasets/{uuid}/processes':
     get:
       tags:
@@ -550,7 +738,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_3
+              schema: &ref_4
                 required:
                   - statusCode
                   - requestId
@@ -586,7 +774,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_3
+              schema: *ref_4
         5XX:
           description: Server Error
           headers:
@@ -604,7 +792,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_3
+              schema: *ref_4
     post:
       tags:
         - processing_job
@@ -783,7 +971,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_4
+              schema: &ref_5
                 required:
                   - statusCode
                   - requestId
@@ -819,7 +1007,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_4
+              schema: *ref_5
         5XX:
           description: Server Error
           headers:
@@ -837,7 +1025,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_4
+              schema: *ref_5
   '/designfiles/{uuid}':
     get:
       tags:
@@ -943,7 +1131,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: &ref_5
+              schema: &ref_6
                 required:
                   - statusCode
                   - requestId
@@ -980,7 +1168,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_5
+              schema: *ref_6
         '404':
           description: Not found
           headers:
@@ -999,7 +1187,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_5
+              schema: *ref_6
         5XX:
           description: Server error
           headers:
@@ -1010,7 +1198,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_5
+              schema: *ref_6
   /geoids:
     get:
       tags:
@@ -1126,7 +1314,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_6
+              schema: &ref_7
                 required:
                   - statusCode
                   - requestId
@@ -1161,7 +1349,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_6
+              schema: *ref_7
   '/geoids/{id}/height':
     get:
       tags:
@@ -1265,7 +1453,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_7
+              schema: &ref_8
                 required:
                   - statusCode
                   - requestId
@@ -1301,7 +1489,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_7
+              schema: *ref_8
         5XX:
           description: Server Error
           headers:
@@ -1319,7 +1507,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_7
+              schema: *ref_8
   '/processes/{uuid}/result':
     get:
       tags:
@@ -1446,7 +1634,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_8
+              schema: &ref_9
                 required:
                   - statusCode
                   - requestId
@@ -1474,7 +1662,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_9
         5XX:
           description: Server Error
           headers:
@@ -1484,7 +1672,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_9
   /projections:
     get:
       tags:
@@ -1601,7 +1789,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_9
+              schema: &ref_10
                 required:
                   - statusCode
                   - requestId
@@ -1637,7 +1825,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_9
+              schema: *ref_10
         5XX:
           description: Server Error
           headers:
@@ -1655,4 +1843,4 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_9
+              schema: *ref_10

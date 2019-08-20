@@ -176,6 +176,44 @@ module.exports = function SkyAPI({
     })
   }
   /**
+   * Get STS credentials
+   * Get STS credentials
+   * @method
+   * @name getCredentials
+   * @param (string) authorization - Organization's access token
+   * @param (string) type - Credentials type
+   * @param (string) duuid - Dataset UUID
+   * @param (string) puuid - Processing Job UUID
+   */
+
+  api.getCredentials = async (params = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/credentials'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['type'] !== undefined) {
+      query['type'] = params['type']
+    }
+
+    if (params['duuid'] !== undefined) {
+      query['duuid'] = params['duuid']
+    }
+
+    if (params['puuid'] !== undefined) {
+      query['puuid'] = params['puuid']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
    * Creates a dataset
    * Creates a new dataset in the customer's account
    * @method
