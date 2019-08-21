@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@skycatch/skyapi-ccrs-localization-post": "github:skycatch/skyapi-ccrs-localization-post",
-    "@skycatch/skyapi-credentials-get": "github:skycatch/skyapi-credentials-get",
+    "@skycatch/skyapi-credentials-filemanager-post": "github:skycatch/skyapi-credentials-filemanager-post",
     "@skycatch/skyapi-datasets-post": "github:skycatch/skyapi-datasets-post",
     "@skycatch/skyapi-datasets-processes-list": "github:skycatch/skyapi-datasets-processes-list",
     "@skycatch/skyapi-datasets-processes-post": "github:skycatch/skyapi-datasets-processes-post",
