@@ -249,13 +249,13 @@ paths:
           content:
             application/json:
               schema: *ref_1
-  /credentials:
-    get:
+  /credentials/filemanager:
+    post:
       tags:
         - credentials
-      summary: Get STS credentials
-      description: Get STS credentials
-      operationId: getCredentials
+      summary: Create STS credentials for use in S3 File Manager
+      description: Create STS credentials for use in S3 File Manager
+      operationId: createFileManagerCredentials
       security:
         - auth0: []
       parameters:
@@ -265,24 +265,27 @@ paths:
           required: true
           schema:
             type: string
-        - name: type
-          in: query
-          description: Credentials type
-          required: true
-          schema:
-            type: string
-        - name: duuid
-          in: query
-          description: Dataset UUID
-          required: false
-          schema:
-            type: string
-        - name: puuid
-          in: query
-          description: Processing Job UUID
-          required: false
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                site:
+                  type: string
+                  description: Site ID
+                dataset:
+                  type: string
+                  description: Dataset ID associated with this Site
+                processing:
+                  type: string
+                  description: Processing Job ID associated with this Dataset
+                designfile:
+                  type: array
+                  description: List of Design Files associated with this Site
+                  items:
+                    type: string
+                    description: Design File ID
       responses:
         '200':
           description: OK
@@ -344,27 +347,29 @@ paths:
                           expiration:
                             type: string
                   - type: object
+                    required:
+                      - buckets
                     properties:
-                      meta:
-                        type: object
-                        properties:
-                          buckets:
-                            type: array
-                            description: Returned only for `file-manager` credentils type
-                            items:
-                              type: object
-                              required:
-                                - bucket
-                                - prefix
-                                - access
-                              additionalProperties: false
-                              properties:
-                                bucket:
-                                  type: string
-                                prefix:
-                                  type: string
-                                access:
-                                  type: string
+                      buckets:
+                        type: array
+                        description: Meta data about the granted bucket access
+                        items:
+                          type: object
+                          required:
+                            - type
+                            - bucket
+                            - prefix
+                            - access
+                          additionalProperties: false
+                          properties:
+                            type:
+                              type: string
+                            bucket:
+                              type: string
+                            prefix:
+                              type: string
+                            access:
+                              type: string
         '400':
           description: Bad Request
           headers:

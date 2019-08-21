@@ -176,33 +176,38 @@ module.exports = function SkyAPI({
     })
   }
   /**
-   * Get STS credentials
-   * Get STS credentials
+   * Create STS credentials for use in S3 File Manager
+   * Create STS credentials for use in S3 File Manager
    * @method
-   * @name getCredentials
+   * @name createFileManagerCredentials
    * @param (string) authorization - Organization's access token
-   * @param (string) type - Credentials type
-   * @param (string) duuid - Dataset UUID
-   * @param (string) puuid - Processing Job UUID
+   * @param (string) site - Site ID
+   * @param (string) dataset - Dataset ID associated with this Site
+   * @param (string) processing - Processing Job ID associated with this Dataset
+   * @param (array) designfile - List of Design Files associated with this Site
    */
 
-  api.getCredentials = async (params = {}) => {
-    let method = 'get'.toUpperCase()
-    let path = `/v${version || 2}` + '/credentials'
+  api.createFileManagerCredentials = async (params = {}) => {
+    let method = 'post'.toUpperCase()
+    let path = `/v${version || 2}` + '/credentials/filemanager'
     let query = {}
     let body = {}
     let security = true
 
-    if (params['type'] !== undefined) {
-      query['type'] = params['type']
+    if (params['site'] !== undefined) {
+      body['site'] = params['site']
     }
 
-    if (params['duuid'] !== undefined) {
-      query['duuid'] = params['duuid']
+    if (params['dataset'] !== undefined) {
+      body['dataset'] = params['dataset']
     }
 
-    if (params['puuid'] !== undefined) {
-      query['puuid'] = params['puuid']
+    if (params['processing'] !== undefined) {
+      body['processing'] = params['processing']
+    }
+
+    if (params['designfile'] !== undefined) {
+      body['designfile'] = params['designfile']
     }
 
     return api.request({
