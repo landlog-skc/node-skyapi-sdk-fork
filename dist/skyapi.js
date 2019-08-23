@@ -267,6 +267,33 @@ module.exports = function SkyAPI({
     })
   }
   /**
+   * Something
+   * Something
+   * @method
+   * @name yourFunctionName
+   * @param (string) something - Something
+   */
+
+  api.yourFunctionName = async (params = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/datasets/{uuid}'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['something'] !== undefined) {
+      query['something'] = params['something']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
    * Gets a list of jobs
    * Gets a list of jobs
    * @method
