@@ -38,7 +38,7 @@ components:
       type: oauth2
       description: Used by organization apps
       flows:
-        clientCredentials: # authorizationCode, implicit, password or clientCredentials)
+        clientCredentials: # authorizationCode, implicit, password or clientCredentials
           tokenUrl: https://{tenant}.auth0.com/oauth/token
           scopes: {}
           # scopes:
