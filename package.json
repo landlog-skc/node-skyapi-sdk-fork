@@ -1,6 +1,6 @@
 {
   "name": "@skycatch/node-skyapi-sdk",
-  "version": "0.0.1-alpha.2",
+  "version": "1.0.0",
   "description": "Node SDK to interact with SkyAPI",
   "main": "./dist/skyapi.js",
   "scripts": {
