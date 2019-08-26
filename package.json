@@ -41,10 +41,5 @@
     "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get",
     "mocha": "^6.1.4",
     "tap": "^14.2.2"
-  },
-  "files": [
-    "dist/",
-    "README.md",
-    "package.json"
-  ]
+  }
 }
