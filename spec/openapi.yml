@@ -57,6 +57,9 @@ paths:
   /datasets/{uuid}:
     get:
       $ref: '../node_modules/@skycatch/skyapi-datasets-get/spec/lambda.yml'
+  /datasets/{uuid}/photos/{id}:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-datasets-photo-get/spec/lambda.yml'
   /datasets/{uuid}/processes:
     get:
       $ref: '../node_modules/@skycatch/skyapi-datasets-processes-list/spec/lambda.yml'
