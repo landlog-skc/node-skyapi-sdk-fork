@@ -184,7 +184,7 @@ module.exports = function SkyAPI({
    * @param (string) site - Site ID
    * @param (string) dataset - Dataset ID associated with this Site
    * @param (string) processing - Processing Job ID associated with this Dataset
-   * @param (array) designfile - List of Design Files associated with this Site
+   * @param () designfile - Create STS credentials for use in S3 File Manager
    */
 
   api.createFileManagerCredentials = async (params = {}) => {
@@ -267,22 +267,60 @@ module.exports = function SkyAPI({
     })
   }
   /**
-   * Something
-   * Something
+   * Get a dataset
+   * Get a dataset by id from the customer's account
    * @method
-   * @name yourFunctionName
-   * @param (string) something - Something
+   * @name getDataset
+   * @param (string) uuid - Dataset identifier
+   * @param (boolean) exif - Fetch additional EXIF information for RAW photos in this dataset.
    */
 
-  api.yourFunctionName = async (params = {}) => {
+  api.getDataset = async (params = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}'
     let query = {}
     let body = {}
-    let security = false
+    let security = true
 
-    if (params['something'] !== undefined) {
-      query['something'] = params['something']
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['exif'] !== undefined) {
+      query['exif'] = params['exif']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
+   * Get Photo Metadata
+   * Get Metadata for a RAW Drone Photo in a customer's account
+   * @method
+   * @name getDatasetPhoto
+   * @param (string) authorization - M2M access token
+   * @param (string) uuid - The dataset identifier
+   * @param (string) id - The photo identifier
+   */
+
+  api.getDatasetPhoto = async (params = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/datasets/{uuid}/photos/{id}'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['id'] !== undefined) {
+      path = path.replace('{' + 'id' + '}', params['id'])
     }
 
     return api.request({
