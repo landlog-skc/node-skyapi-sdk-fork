@@ -39,6 +39,8 @@
     "@skycatch/skyapi-geoids-list": "github:skycatch/skyapi-geoids-list",
     "@skycatch/skyapi-processing-result-get": "github:skycatch/skyapi-processing-result-get",
     "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get",
+    "@skycatch/skyapi-datasets-validation-list": "github:skycatch/skyapi-datasets-validation-list",
+    "@skycatch/skyapi-datasets-validation-post": "github:skycatch/skyapi-datasets-validation-post",
     "mocha": "^6.1.4",
     "tap": "^14.2.2"
   }
