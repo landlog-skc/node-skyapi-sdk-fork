@@ -446,6 +446,77 @@ module.exports = function SkyAPI({
     })
   }
   /**
+   * List dataset validations
+   * Get a list of known validations for a specific dataset
+   * @method
+   * @name getDatasetValidations
+   * @param (string) uuid - Dataset ID
+   * @param (string) type - Validation type
+   * @param (string) authorization - Organization's access token
+   */
+
+  api.getDatasetValidations = async (params = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/datasets/{uuid}/validations'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['type'] !== undefined) {
+      query['type'] = params['type']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
+   * Create validations for given dataset
+   * Initiates the validation of images and/or ccrs in the dataset
+   * @method
+   * @name createDatasetValidations
+   * @param (string) uuid - Dataset ID
+   * @param (string) authorization - Organization's access token
+   * @param (string) type - Type of validation to run
+   * @param (object) data - Validation input such as images or ccrs
+   */
+
+  api.createDatasetValidations = async (params = {}) => {
+    let method = 'post'.toUpperCase()
+    let path = `/v${version || 2}` + '/datasets/{uuid}/validations'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['type'] !== undefined) {
+      body['type'] = params['type']
+    }
+
+    if (params['data'] !== undefined) {
+      body['data'] = params['data']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
    * Gets design files
    * Retrieves processed design files for a dataset
    * @method

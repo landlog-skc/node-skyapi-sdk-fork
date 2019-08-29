@@ -1444,6 +1444,475 @@ paths:
           content:
             application/json:
               schema: *ref_7
+  '/datasets/{uuid}/validations':
+    get:
+      tags:
+        - validation
+      summary: List dataset validations
+      description: Get a list of known validations for a specific dataset
+      operationId: getDatasetValidations
+      security:
+        - auth0: []
+      parameters:
+        - name: uuid
+          in: path
+          description: Dataset ID
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Validation type
+          required: false
+          schema:
+            type: string
+            enum:
+              - rtk
+              - cps
+        - name: authorization
+          in: header
+          description: Organization's access token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - next
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      next:
+                        type: string
+                        description: Link to next set of items
+                      type:
+                        type: string
+                        description: Response item data type
+                      data:
+                        type: array
+                        description: List of items
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                            - datasetUuid
+                            - createdAt
+                            - updatedAt
+                            - errors
+                            - status
+                            - type
+                          additionalProperties: false
+                          properties:
+                            datasetUuid:
+                              type: string
+                            createdAt:
+                              type: string
+                              format: date-time
+                            updatedAt:
+                              type: string
+                              format: date-time
+                            errors:
+                              type: array
+                              items:
+                                type: object
+                                required:
+                                  - name
+                                  - message
+                                  - code
+                                properties:
+                                  name:
+                                    type: string
+                                  message:
+                                    type: string
+                                  code:
+                                    type: integer
+                            status:
+                              type: string
+                              enum:
+                                - started
+                                - finished
+                                - failed
+                                - aborted
+                                - scheduled
+                            type:
+                              type: string
+                              enum:
+                                - rtk
+                                - cps
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_8
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_8
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_8
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_8
+    post:
+      tags:
+        - validation
+      summary: Create validations for given dataset
+      description: Initiates the validation of images and/or ccrs in the dataset
+      operationId: createDatasetValidations
+      security:
+        - auth0: []
+      parameters:
+        - name: uuid
+          in: path
+          description: Dataset ID
+          required: true
+          schema:
+            type: string
+        - name: authorization
+          in: header
+          description: Organization's access token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                type:
+                  type: string
+                  description: Type of validation to run
+                data:
+                  type: object
+                  description: Validation input such as images or ccrs
+                  properties:
+                    images:
+                      type: array
+                      description: Metadata for images to validate
+                      items:
+                        type: object
+                        additionalProperties: true
+                        properties:
+                          filename:
+                            type: string
+                          date:
+                            type: number
+                          GPSLatitude:
+                            type: number
+                          GPSLatitudeRef:
+                            type: string
+                            enum:
+                              - S
+                              - E
+                              - 'N'
+                              - W
+                          GPSLongitude:
+                            type: number
+                          GPSLongitudeRef:
+                            type: string
+                            enum:
+                              - S
+                              - E
+                              - 'N'
+                              - W
+                          UserComment:
+                            type: string
+                    ccrs:
+                      type: object
+                      description: Input ccrs to be validated
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - next
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      next:
+                        type: string
+                        description: Link to next set of items
+                      type:
+                        type: string
+                        description: Response item data type
+                      data:
+                        type: array
+                        description: List of items
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                            - datasetUuid
+                            - createdAt
+                            - updatedAt
+                            - errors
+                            - status
+                            - type
+                          additionalProperties: false
+                          properties:
+                            datasetUuid:
+                              type: string
+                            createdAt:
+                              type: string
+                              format: date-time
+                            updatedAt:
+                              type: string
+                              format: date-time
+                            errors:
+                              type: array
+                              items:
+                                type: object
+                                required:
+                                  - name
+                                  - message
+                                  - code
+                                properties:
+                                  name:
+                                    type: string
+                                  message:
+                                    type: string
+                                  code:
+                                    type: integer
+                            status:
+                              type: string
+                              enum:
+                                - started
+                                - finished
+                                - failed
+                                - aborted
+                                - scheduled
+                            type:
+                              type: string
+                              description: Type of validation to run
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_9
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_9
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_9
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_9
   '/designfiles/{uuid}':
     get:
       tags:
@@ -1549,7 +2018,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: &ref_8
+              schema: &ref_10
                 required:
                   - statusCode
                   - requestId
@@ -1586,7 +2055,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_10
         '404':
           description: Not found
           headers:
@@ -1605,7 +2074,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_10
         5XX:
           description: Server error
           headers:
@@ -1616,7 +2085,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_8
+              schema: *ref_10
   /geoids:
     get:
       tags:
@@ -1732,7 +2201,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_9
+              schema: &ref_11
                 required:
                   - statusCode
                   - requestId
@@ -1767,7 +2236,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_9
+              schema: *ref_11
   '/geoids/{id}/height':
     get:
       tags:
@@ -1871,7 +2340,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_10
+              schema: &ref_12
                 required:
                   - statusCode
                   - requestId
@@ -1907,7 +2376,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_10
+              schema: *ref_12
         5XX:
           description: Server Error
           headers:
@@ -1925,7 +2394,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_10
+              schema: *ref_12
   '/processes/{uuid}/result':
     get:
       tags:
@@ -2052,7 +2521,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_11
+              schema: &ref_13
                 required:
                   - statusCode
                   - requestId
@@ -2080,7 +2549,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_11
+              schema: *ref_13
         5XX:
           description: Server Error
           headers:
@@ -2090,7 +2559,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_11
+              schema: *ref_13
   /projections:
     get:
       tags:
@@ -2207,7 +2676,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_12
+              schema: &ref_14
                 required:
                   - statusCode
                   - requestId
@@ -2243,7 +2712,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_12
+              schema: *ref_14
         5XX:
           description: Server Error
           headers:
@@ -2261,4 +2730,4 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_12
+              schema: *ref_14
