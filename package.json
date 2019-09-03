@@ -41,6 +41,8 @@
     "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get",
     "@skycatch/skyapi-datasets-validation-list": "github:skycatch/skyapi-datasets-validation-list",
     "@skycatch/skyapi-datasets-validation-post": "github:skycatch/skyapi-datasets-validation-post",
+    "@skycatch/skyapi-datasets-files-delete": "github:skycatch/skyapi-datasets-files-delete",
+    "@skycatch/skyapi-datasets-files-delete-all": "github:skycatch/skyapi-datasets-files-delete-all",
     "mocha": "^6.1.4",
     "tap": "^14.2.2"
   }
