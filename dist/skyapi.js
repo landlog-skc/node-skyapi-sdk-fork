@@ -517,6 +517,72 @@ module.exports = function SkyAPI({
     })
   }
   /**
+   * Delete datasets file
+   * Backup file as .del and remove the original
+   * @method
+   * @name deleteDatasetFile
+   * @param (string) uuid - Dataset ID
+   * @param (string) id - File ID
+   * @param (string) authorization - Organization's access token
+   */
+
+  api.deleteDatasetFile = async (params = {}) => {
+    let method = 'delete'.toUpperCase()
+    let path = `/v${version || 2}` + '/datasets/{uuid}/files/{id}'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['id'] !== undefined) {
+      path = path.replace('{' + 'id' + '}', params['id'])
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
+   * Delete datasets files
+   * Find files of given type, back them up as .del and remove the original files
+   * @method
+   * @name deleteDatasetFiles
+   * @param (string) uuid - Dataset ID
+   * @param (string) type - File type
+   * @param (string) authorization - Organization's access token
+   */
+
+  api.deleteDatasetFiles = async (params = {}) => {
+    let method = 'delete'.toUpperCase()
+    let path = `/v${version || 2}` + '/datasets/{uuid}/files'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['type'] !== undefined) {
+      query['type'] = params['type']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
    * Gets design files
    * Retrieves processed design files for a dataset
    * @method

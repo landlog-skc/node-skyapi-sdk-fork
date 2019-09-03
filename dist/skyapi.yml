@@ -1239,6 +1239,8 @@ paths:
                   type: string
                   description: Type of process to run
                   enum:
+                    - photogrammetry
+                    - preProcessed
                     - images
                     - pointCloud
                     - publish
@@ -1913,6 +1915,274 @@ paths:
           content:
             application/json:
               schema: *ref_9
+  '/datasets/{uuid}/files/{id}':
+    delete:
+      tags:
+        - file
+      summary: Delete datasets file
+      description: Backup file as .del and remove the original
+      operationId: deleteDatasetFile
+      security:
+        - auth0: []
+      parameters:
+        - name: uuid
+          in: path
+          description: Dataset ID
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: File ID
+          required: true
+          schema:
+            type: string
+        - name: authorization
+          in: header
+          description: Organization's access token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_10
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_10
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_10
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_10
+  '/datasets/{uuid}/files':
+    delete:
+      tags:
+        - file
+      summary: Delete datasets files
+      description: >-
+        Find files of given type, back them up as .del and remove the original
+        files
+      operationId: deleteDatasetFiles
+      security:
+        - auth0: []
+      parameters:
+        - name: uuid
+          in: path
+          description: Dataset ID
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: File type
+          schema:
+            type: string
+          required: true
+        - name: authorization
+          in: header
+          description: Organization's access token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_11
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_11
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_11
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_11
   '/designfiles/{uuid}':
     get:
       tags:
@@ -2018,7 +2288,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: &ref_10
+              schema: &ref_12
                 required:
                   - statusCode
                   - requestId
@@ -2055,7 +2325,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_10
+              schema: *ref_12
         '404':
           description: Not found
           headers:
@@ -2074,7 +2344,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_10
+              schema: *ref_12
         5XX:
           description: Server error
           headers:
@@ -2085,7 +2355,7 @@ paths:
               required: true
           content:
             application/json:
-              schema: *ref_10
+              schema: *ref_12
   /geoids:
     get:
       tags:
@@ -2201,7 +2471,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_11
+              schema: &ref_13
                 required:
                   - statusCode
                   - requestId
@@ -2236,7 +2506,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_11
+              schema: *ref_13
   '/geoids/{id}/height':
     get:
       tags:
@@ -2340,7 +2610,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_12
+              schema: &ref_14
                 required:
                   - statusCode
                   - requestId
@@ -2376,7 +2646,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_12
+              schema: *ref_14
         5XX:
           description: Server Error
           headers:
@@ -2394,7 +2664,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_12
+              schema: *ref_14
   '/processes/{uuid}/result':
     get:
       tags:
@@ -2521,7 +2791,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_13
+              schema: &ref_15
                 required:
                   - statusCode
                   - requestId
@@ -2549,7 +2819,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_13
+              schema: *ref_15
         5XX:
           description: Server Error
           headers:
@@ -2559,7 +2829,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_13
+              schema: *ref_15
   /projections:
     get:
       tags:
@@ -2676,7 +2946,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_14
+              schema: &ref_16
                 required:
                   - statusCode
                   - requestId
@@ -2712,7 +2982,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_14
+              schema: *ref_16
         5XX:
           description: Server Error
           headers:
@@ -2730,4 +3000,4 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_14
+              schema: *ref_16
