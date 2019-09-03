@@ -70,6 +70,12 @@ paths:
       $ref: '../node_modules/@skycatch/skyapi-datasets-validation-list/spec/lambda.yml'
     post:
       $ref: '../node_modules/@skycatch/skyapi-datasets-validation-post/spec/lambda.yml'
+  /datasets/{uuid}/files/{id}:
+    delete:
+      $ref: '../node_modules/@skycatch/skyapi-datasets-files-delete/spec/lambda.yml'
+  /datasets/{uuid}/files:
+    delete:
+      $ref: '../node_modules/@skycatch/skyapi-datasets-files-delete-all/spec/lambda.yml'
   /designfiles/{uuid}:
     get:
       $ref: '../node_modules/@skycatch/skyapi-designfiles-get/spec/lambda.yml'
