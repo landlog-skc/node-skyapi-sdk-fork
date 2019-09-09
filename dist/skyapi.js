@@ -366,6 +366,7 @@ module.exports = function SkyAPI({
    * @param (string) uuid - Dataset ID
    * @param (boolean) dryrun - Create processing job entry without starting the job
    * @param (string) type - Type of process to run
+   * @param (string) sourceData - Type of input images
    * @param (object) ccrs - The definition of the custom coordinate reference system used to generate outputs and parse inputs
    * @param (object) options - Option flags to trigger custom behavior
    * @param (string) containerName - Name of the partner storage container to sync back
@@ -395,6 +396,10 @@ module.exports = function SkyAPI({
 
     if (params['type'] !== undefined) {
       body['type'] = params['type']
+    }
+
+    if (params['sourceData'] !== undefined) {
+      body['sourceData'] = params['sourceData']
     }
 
     if (params['ccrs'] !== undefined) {
