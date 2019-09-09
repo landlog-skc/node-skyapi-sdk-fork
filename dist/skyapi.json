@@ -2186,12 +2186,21 @@
                     "description": "Type of process to run",
                     "enum": [
                       "photogrammetry",
-                      "preProcessed",
+                      "preProcessedFiles",
                       "images",
                       "pointCloud",
                       "publish"
                     ],
                     "default": "images"
+                  },
+                  "sourceData": {
+                    "type": "string",
+                    "description": "Type of input images",
+                    "enum": [
+                      "rgb_mixed",
+                      "rgb_nadir",
+                      "rgb_oblique"
+                    ]
                   },
                   "ccrs": {
                     "type": "object",
