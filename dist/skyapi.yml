@@ -2672,6 +2672,187 @@ paths:
           content:
             application/json:
               schema: *ref_14
+  '/measure/{type}':
+    post:
+      tags:
+        - measurements
+      summary: Something
+      description: Something
+      operationId: measureSurfaceElevation
+      security:
+        - auth0: []
+      parameters:
+        - name: type
+          in: path
+          description: Measurement Type
+          required: true
+          schema:
+            type: string
+        - name: compact
+          in: query
+          description: True to compact the elevation deltas
+          required: false
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - surfaceId
+                - surfaceType
+                - level
+                - feature
+              additionalProperties: false
+              type: object
+              properties:
+                surfaceId:
+                  type: string
+                  description: Processing Job UUID
+                surfaceType:
+                  type: string
+                  description: Surface type
+                level:
+                  type: number
+                  description: Zoom level
+                feature:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    geometry:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        coordinates:
+                          type: array
+                          description: Coordinates
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      type:
+                        type: string
+                        description: Response data type
+                      data:
+                        type: object
+                        description: Response data
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - elevations
+                        additionalProperties: false
+                        properties:
+                          elevations:
+                            type: array
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_15
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_15
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_15
   '/processes/{uuid}/result':
     get:
       tags:
@@ -2798,7 +2979,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_15
+              schema: &ref_16
                 required:
                   - statusCode
                   - requestId
@@ -2826,7 +3007,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_15
+              schema: *ref_16
         5XX:
           description: Server Error
           headers:
@@ -2836,7 +3017,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_15
+              schema: *ref_16
   /projections:
     get:
       tags:
@@ -2953,7 +3134,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_16
+              schema: &ref_17
                 required:
                   - statusCode
                   - requestId
@@ -2989,7 +3170,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_16
+              schema: *ref_17
         5XX:
           description: Server Error
           headers:
@@ -3007,4 +3188,4 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_16
+              schema: *ref_17

@@ -684,6 +684,58 @@ module.exports = function SkyAPI({
     })
   }
   /**
+   * Something
+   * Something
+   * @method
+   * @name measureSurfaceElevation
+   * @param (string) type - Measurement Type
+   * @param (boolean) compact - True to compact the elevation deltas
+   * @param (string) surfaceId - Processing Job UUID
+   * @param (string) surfaceType - Surface type
+   * @param (number) level - Zoom level
+   * @param (object) feature - Something
+   */
+
+  api.measureSurfaceElevation = async (params = {}) => {
+    let method = 'post'.toUpperCase()
+    let path = `/v${version || 2}` + '/measure/{type}'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['type'] !== undefined) {
+      path = path.replace('{' + 'type' + '}', params['type'])
+    }
+
+    if (params['compact'] !== undefined) {
+      query['compact'] = params['compact']
+    }
+
+    if (params['surfaceId'] !== undefined) {
+      body['surfaceId'] = params['surfaceId']
+    }
+
+    if (params['surfaceType'] !== undefined) {
+      body['surfaceType'] = params['surfaceType']
+    }
+
+    if (params['level'] !== undefined) {
+      body['level'] = params['level']
+    }
+
+    if (params['feature'] !== undefined) {
+      body['feature'] = params['feature']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
    * List Processing Job Results
    * List Processing Job Results
    * @method
