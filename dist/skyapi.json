@@ -5286,6 +5286,351 @@
         }
       }
     },
+    "/measure/aggregate/{type}": {
+      "post": {
+        "tags": [
+          "measurement"
+        ],
+        "summary": "Measure Aggregate Volume",
+        "description": "Measure Aggregate Volume",
+        "operationId": "measureAggregateVolume",
+        "security": [
+          {
+            "auth0": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Measurement Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "surfaceId",
+                  "surfaceType",
+                  "level",
+                  "feature",
+                  "basePlane"
+                ],
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "surfaceId": {
+                    "type": "string",
+                    "description": "Processing Job UUID"
+                  },
+                  "surfaceType": {
+                    "type": "string",
+                    "description": "Surface type"
+                  },
+                  "level": {
+                    "type": "number",
+                    "description": "Zoom level"
+                  },
+                  "feature": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "geometry": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          },
+                          "coordinates": {
+                            "type": "array",
+                            "description": "Coordinates"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "basePlane": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "Content-Type": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Content Type",
+                "required": true
+              },
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Headers": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "required": [
+                        "statusCode",
+                        "requestId",
+                        "type",
+                        "data"
+                      ],
+                      "additionalProperties": true,
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "number",
+                          "description": "Response status code"
+                        },
+                        "requestId": {
+                          "type": "string",
+                          "description": "Request unique identifier"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Response data type"
+                        },
+                        "data": {
+                          "type": "object",
+                          "description": "Response data"
+                        }
+                      }
+                    },
+                    {
+                      "required": [
+                        "statusCode",
+                        "requestId",
+                        "next",
+                        "type",
+                        "data"
+                      ],
+                      "additionalProperties": true,
+                      "type": "object",
+                      "properties": {
+                        "statusCode": {
+                          "type": "number",
+                          "description": "Response status code"
+                        },
+                        "requestId": {
+                          "type": "string",
+                          "description": "Request unique identifier"
+                        },
+                        "next": {
+                          "type": "string",
+                          "description": "Link to next set of items"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Response item data type"
+                        },
+                        "data": {
+                          "type": "array",
+                          "description": "List of items"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "Content-Type": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Headers": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "statusCode",
+                    "requestId",
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "description": "Response status code"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Request unique identifier"
+                    },
+                    "error": {
+                      "oneOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "array"
+                        }
+                      ],
+                      "description": "Error object or list of errors"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "headers": {
+              "Content-Type": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Headers": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "statusCode",
+                    "requestId",
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "description": "Response status code"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Request unique identifier"
+                    },
+                    "error": {
+                      "oneOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "array"
+                        }
+                      ],
+                      "description": "Error object or list of errors"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "5XX": {
+            "description": "Server Error",
+            "headers": {
+              "Content-Type": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Origin": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Headers": {
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "statusCode",
+                    "requestId",
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "number",
+                      "description": "Response status code"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Request unique identifier"
+                    },
+                    "error": {
+                      "oneOf": [
+                        {
+                          "type": "object"
+                        },
+                        {
+                          "type": "array"
+                        }
+                      ],
+                      "description": "Error object or list of errors"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/processes/{uuid}/result": {
       "get": {
         "tags": [
