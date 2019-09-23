@@ -5306,7 +5306,12 @@
             "description": "Measurement Type",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "basic_volume",
+                "cut_fill_volume",
+                "progress"
+              ]
             }
           }
         ],
@@ -5316,11 +5321,8 @@
             "application/json": {
               "schema": {
                 "required": [
-                  "surfaceId",
-                  "surfaceType",
                   "level",
-                  "feature",
-                  "basePlane"
+                  "feature"
                 ],
                 "additionalProperties": false,
                 "type": "object",
@@ -5332,6 +5334,23 @@
                   "surfaceType": {
                     "type": "string",
                     "description": "Surface type"
+                  },
+                  "surfaces": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Processing Job UUID"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Surface type"
+                        }
+                      }
+                    }
                   },
                   "level": {
                     "type": "number",

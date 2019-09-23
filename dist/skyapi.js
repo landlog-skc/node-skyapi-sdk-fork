@@ -743,6 +743,7 @@ module.exports = function SkyAPI({
    * @param (string) type - Measurement Type
    * @param (string) surfaceId - Processing Job UUID
    * @param (string) surfaceType - Surface type
+   * @param (array) surfaces - Measure Aggregate Volume
    * @param (number) level - Zoom level
    * @param (object) feature - Measure Aggregate Volume
    * @param (object) basePlane - Measure Aggregate Volume
@@ -765,6 +766,10 @@ module.exports = function SkyAPI({
 
     if (params['surfaceType'] !== undefined) {
       body['surfaceType'] = params['surfaceType']
+    }
+
+    if (params['surfaces'] !== undefined) {
+      body['surfaces'] = params['surfaces']
     }
 
     if (params['level'] !== undefined) {

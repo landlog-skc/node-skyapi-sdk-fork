@@ -2869,17 +2869,18 @@ paths:
           required: true
           schema:
             type: string
+            enum:
+              - basic_volume
+              - cut_fill_volume
+              - progress
       requestBody:
         required: true
         content:
           application/json:
             schema:
               required:
-                - surfaceId
-                - surfaceType
                 - level
                 - feature
-                - basePlane
               additionalProperties: false
               type: object
               properties:
@@ -2889,6 +2890,18 @@ paths:
                 surfaceType:
                   type: string
                   description: Surface type
+                surfaces:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        description: Processing Job UUID
+                      type:
+                        type: string
+                        description: Surface type
                 level:
                   type: number
                   description: Zoom level
