@@ -225,6 +225,7 @@ module.exports = function SkyAPI({
    * @name createDataset
    * @param (string) authorization - Organization's access token
    * @param (string) token - User access token
+   * @param (string) userId - User identifier
    * @param (string) name - Dataset name
    * @param (string) sourceId -  The source ID in the app creating the dataset. If passed in it will be used as the name for the s3 object dir in place of the DUUID. 
    * @param (string) type - The dataset type
@@ -240,6 +241,10 @@ module.exports = function SkyAPI({
 
     if (params['token'] !== undefined) {
       query['token'] = params['token']
+    }
+
+    if (params['userId'] !== undefined) {
+      query['userId'] = params['userId']
     }
 
     if (params['name'] !== undefined) {
@@ -366,7 +371,6 @@ module.exports = function SkyAPI({
    * @param (string) uuid - Dataset ID
    * @param (boolean) dryrun - Create processing job entry without starting the job
    * @param (string) type - Type of process to run
-   * @param (string) sourceData - Type of input images
    * @param (object) ccrs - The definition of the custom coordinate reference system used to generate outputs and parse inputs
    * @param (object) options - Option flags to trigger custom behavior
    * @param (string) containerName - Name of the partner storage container to sync back
@@ -396,10 +400,6 @@ module.exports = function SkyAPI({
 
     if (params['type'] !== undefined) {
       body['type'] = params['type']
-    }
-
-    if (params['sourceData'] !== undefined) {
-      body['sourceData'] = params['sourceData']
     }
 
     if (params['ccrs'] !== undefined) {
@@ -725,6 +725,38 @@ module.exports = function SkyAPI({
 
     if (params['feature'] !== undefined) {
       body['feature'] = params['feature']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
+   * Retrieve the status and result of a measurement job
+   * Retrieve the status and result of a measurement job
+   * @method
+   * @name getMeasurementResult
+   * @param (string) type - Measurement Type
+   * @param (string) id - Measurement ID
+   */
+
+  api.getMeasurementResult = async (params = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/measure/{type}/${id}'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['type'] !== undefined) {
+      path = path.replace('{' + 'type' + '}', params['type'])
+    }
+
+    if (params['id'] !== undefined) {
+      path = path.replace('{' + 'id' + '}', params['id'])
     }
 
     return api.request({

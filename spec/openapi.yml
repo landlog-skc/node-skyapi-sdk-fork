@@ -88,6 +88,9 @@ paths:
   /measure/{type}:
     post:
       $ref: '../node_modules/@skycatch/skyapi-measure-surface-elevation-post/spec/lambda.yml'
+  /measure/{type}/${id}:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-measure-surface-get/spec/lambda.yml'
   /measure/aggregate/{type}:
     post:
       $ref: '../node_modules/@skycatch/skyapi-measure-aggregate-volume-post/spec/lambda.yml'

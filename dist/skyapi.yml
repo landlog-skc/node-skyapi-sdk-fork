@@ -467,6 +467,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: userId
+          in: query
+          description: User identifier
+          required: false
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -1239,19 +1245,10 @@ paths:
                   type: string
                   description: Type of process to run
                   enum:
-                    - photogrammetry
-                    - preProcessedFiles
                     - images
                     - pointCloud
                     - publish
                   default: images
-                sourceData:
-                  type: string
-                  description: Type of input images
-                  enum:
-                    - rgb_mixed
-                    - rgb_nadir
-                    - rgb_oblique
                 ccrs:
                   type: object
                   description: >-
@@ -1307,12 +1304,6 @@ paths:
                 type: string
               description: Content Type
               required: true
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
           content:
             application/json:
               schema:
@@ -1382,20 +1373,13 @@ paths:
                           stateCode:
                             type: integer
         '400':
-          description: Bad Request
+          description: Bad request
           headers:
             Content-Type:
-              required: true
               schema:
                 type: string
-            Access-Control-Allow-Origin:
+              description: Content Type
               required: true
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              required: true
-              schema:
-                type: string
           content:
             application/json:
               schema: &ref_7
@@ -1419,37 +1403,15 @@ paths:
                     description: Error object or list of errors
         '404':
           description: Not Found
-          headers:
-            Content-Type:
-              required: true
-              schema:
-                type: string
-            Access-Control-Allow-Origin:
-              required: true
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              required: true
-              schema:
-                type: string
-          content:
-            application/json:
-              schema: *ref_7
+          content: {}
         5XX:
-          description: Server Error
+          description: Server error
           headers:
             Content-Type:
-              required: true
               schema:
                 type: string
-            Access-Control-Allow-Origin:
+              description: Content Type
               required: true
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              required: true
-              schema:
-                type: string
           content:
             application/json:
               schema: *ref_7
@@ -2280,14 +2242,6 @@ paths:
         '400':
           description: Bad request
           headers:
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
-              description: Access Control Allow Headers
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-              description: Access Control Allow Origin
             Content-Type:
               schema:
                 type: string
@@ -2314,44 +2268,9 @@ paths:
                       - type: object
                       - type: array
                     description: Error object or list of errors
-        '403':
-          description: Forbidden
-          headers:
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
-              description: Access Control Allow Headers
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-              description: Access Control Allow Origin
-            Content-Type:
-              schema:
-                type: string
-              description: Content Type
-              required: true
-          content:
-            application/json:
-              schema: *ref_12
         '404':
-          description: Not found
-          headers:
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
-              description: Access Control Allow Headers
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-              description: Access Control Allow Origin
-            Content-Type:
-              schema:
-                type: string
-              description: Content Type
-              required: true
-          content:
-            application/json:
-              schema: *ref_12
+          description: Not Found
+          content: {}
         5XX:
           description: Server error
           headers:
@@ -2394,12 +2313,6 @@ paths:
                 type: string
               description: Content Type
               required: true
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
           content:
             application/json:
               schema:
@@ -2407,7 +2320,6 @@ paths:
                   - required:
                       - statusCode
                       - requestId
-                      - next
                       - type
                       - data
                     additionalProperties: true
@@ -2419,49 +2331,52 @@ paths:
                       requestId:
                         type: string
                         description: Request unique identifier
-                      next:
-                        type: string
-                        description: Link to next set of items
                       type:
                         type: string
-                        description: Response item data type
+                        description: Response data type
                       data:
-                        type: array
-                        description: List of items
+                        type: object
+                        description: Response data
                   - type: object
                     required:
                       - data
                     properties:
                       data:
-                        type: array
-                        description: An array of matching Geoids
-                        items:
-                          type: object
-                          description: A Geoid object
-                          properties:
-                            models:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  name:
-                                    type: string
-                                  cols:
-                                    type: number
-                                  maxlat:
-                                    type: number
-                                  maxlon:
-                                    type: number
-                                  minlat:
-                                    type: number
-                                  minlon:
-                                    type: number
-                                  rows:
-                                    type: number
-                                  spacingLat:
-                                    type: number
-                                  spacingLon:
-                                    type: number
+                        required:
+                          - geoid
+                        additionalProperties: false
+                        type: object
+                        properties:
+                          geoid:
+                            type: array
+                            description: An array of matching Geoids
+                            items:
+                              type: object
+                              description: A Geoid object
+                              properties:
+                                models:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      name:
+                                        type: string
+                                      cols:
+                                        type: number
+                                      maxlat:
+                                        type: number
+                                      maxlon:
+                                        type: number
+                                      minlat:
+                                        type: number
+                                      minlon:
+                                        type: number
+                                      rows:
+                                        type: number
+                                      spacingLat:
+                                        type: number
+                                      spacingLon:
+                                        type: number
         '400':
           description: Bad request
           headers:
@@ -2470,12 +2385,6 @@ paths:
                 type: string
               description: Content Type
               required: true
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
           content:
             application/json:
               schema: &ref_13
@@ -2505,12 +2414,6 @@ paths:
                 type: string
               description: Content Type
               required: true
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
           content:
             application/json:
               schema: *ref_13
@@ -2853,13 +2756,13 @@ paths:
           content:
             application/json:
               schema: *ref_15
-  '/measure/aggregate/{type}':
-    post:
+  '/measure/{type}/${id}':
+    get:
       tags:
         - measurement
-      summary: Measure Aggregate Volume
-      description: Measure Aggregate Volume
-      operationId: measureAggregateVolume
+      summary: Retrieve the status and result of a measurement job
+      description: Retrieve the status and result of a measurement job
+      operationId: getMeasurementResult
       security:
         - auth0: []
       parameters:
@@ -2873,53 +2776,12 @@ paths:
               - basic_volume
               - cut_fill_volume
               - progress
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              required:
-                - level
-                - feature
-              additionalProperties: false
-              type: object
-              properties:
-                surfaceId:
-                  type: string
-                  description: Processing Job UUID
-                surfaceType:
-                  type: string
-                  description: Surface type
-                surfaces:
-                  type: array
-                  items:
-                    type: object
-                    additionalProperties: false
-                    properties:
-                      id:
-                        type: string
-                        description: Processing Job UUID
-                      type:
-                        type: string
-                        description: Surface type
-                level:
-                  type: number
-                  description: Zoom level
-                feature:
-                  type: object
-                  properties:
-                    type:
-                      type: string
-                    geometry:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                        coordinates:
-                          type: array
-                          description: Coordinates
-                basePlane:
-                  type: object
+        - name: id
+          in: path
+          description: Measurement ID
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -2938,7 +2800,7 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
+                allOf:
                   - required:
                       - statusCode
                       - requestId
@@ -2959,30 +2821,63 @@ paths:
                       data:
                         type: object
                         description: Response data
-                  - required:
-                      - statusCode
-                      - requestId
-                      - next
-                      - type
+                  - type: object
+                    required:
                       - data
-                    additionalProperties: true
-                    type: object
                     properties:
-                      statusCode:
-                        type: number
-                        description: Response status code
-                      requestId:
-                        type: string
-                        description: Request unique identifier
-                      next:
-                        type: string
-                        description: Link to next set of items
-                      type:
-                        type: string
-                        description: Response item data type
                       data:
-                        type: array
-                        description: List of items
+                        type: object
+                        required:
+                          - id
+                          - state
+                          - statusCode
+                          - createdAt
+                          - updatedAt
+                          - result
+                        additionalProperties: false
+                        properties:
+                          id:
+                            type: string
+                          state:
+                            type: string
+                          statusCode:
+                            type: number
+                            format: date-time
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                          result:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              area2d:
+                                type: number
+                              cut:
+                                type: number
+                              fill:
+                                type: number
+                              net:
+                                type: number
+                              total:
+                                type: number
+                              fillToDate:
+                                type: number
+                              fillProgress:
+                                type: number
+                              overfill:
+                                type: number
+                              totalFill:
+                                type: number
+                              cutToDate:
+                                type: number
+                              cutProgress:
+                                type: number
+                              totalCut:
+                                type: number
+                              overcut:
+                                type: number
         '400':
           description: Bad Request
           headers:
@@ -3055,6 +2950,245 @@ paths:
           content:
             application/json:
               schema: *ref_16
+  '/measure/aggregate/{type}':
+    post:
+      tags:
+        - measurement
+      summary: Measure Aggregate Volume
+      description: Measure Aggregate Volume
+      operationId: measureAggregateVolume
+      security:
+        - auth0: []
+      parameters:
+        - name: type
+          in: path
+          description: Measurement Type
+          required: true
+          schema:
+            type: string
+            enum:
+              - basic_volume
+              - cut_fill_volume
+              - progress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - level
+                - feature
+              additionalProperties: false
+              type: object
+              properties:
+                surfaceId:
+                  type: string
+                  description: Processing Job UUID
+                surfaceType:
+                  type: string
+                  description: Surface type
+                surfaces:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        description: Processing Job UUID
+                      type:
+                        type: string
+                        description: Surface type
+                        enum:
+                          - dtm
+                          - dsm
+                          - terrain
+                          - design
+                level:
+                  type: number
+                  description: Zoom level
+                feature:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    geometry:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        coordinates:
+                          type: array
+                          description: Coordinates
+                basePlane:
+                  type: object
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      type:
+                        type: string
+                        description: Response data type
+                      data:
+                        type: object
+                        description: Response data
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - id
+                          - state
+                          - statusCode
+                          - createdAt
+                          - updatedAt
+                        additionalProperties: false
+                        properties:
+                          id:
+                            type: string
+                          state:
+                            type: string
+                          statusCode:
+                            type: number
+                            format: date-time
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                          report:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              area2d:
+                                type: number
+                              cut:
+                                type: number
+                              fill:
+                                type: number
+                              net:
+                                type: number
+                              total:
+                                type: number
+                              fillToDate:
+                                type: number
+                              fillProgress:
+                                type: number
+                              overfill:
+                                type: number
+                              totalFill:
+                                type: number
+                              cutToDate:
+                                type: number
+                              cutProgress:
+                                type: number
+                              totalCut:
+                                type: number
+                              overcut:
+                                type: number
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_17
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_17
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_17
   '/processes/{uuid}/result':
     get:
       tags:
@@ -3181,7 +3315,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_17
+              schema: &ref_18
                 required:
                   - statusCode
                   - requestId
@@ -3209,7 +3343,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_17
+              schema: *ref_18
         5XX:
           description: Server Error
           headers:
@@ -3219,7 +3353,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_17
+              schema: *ref_18
   /projections:
     get:
       tags:
@@ -3251,16 +3385,10 @@ paths:
                 type: string
               description: Content Type
               required: true
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
           content:
             application/json:
               schema:
-                allOf:
+                oneOf:
                   - required:
                       - statusCode
                       - requestId
@@ -3281,62 +3409,41 @@ paths:
                       data:
                         type: object
                         description: Response data
-                  - type: object
-                    required:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - next
+                      - type
                       - data
+                    additionalProperties: true
+                    type: object
                     properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      next:
+                        type: string
+                        description: Link to next set of items
+                      type:
+                        type: string
+                        description: Response item data type
                       data:
-                        type: object
-                        additionalProperties:
-                          type: object
-                          required:
-                            - id
-                            - name
-                            - proj4
-                            - bbox
-                            - datum
-                          additionalProperties: false
-                          properties:
-                            id:
-                              type: number
-                            name:
-                              type: string
-                            proj4:
-                              type: string
-                            bbox:
-                              type: array
-                            units:
-                              type: string
-                            datum:
-                              type: object
-                              additionalProperties: false
-                              properties:
-                                name:
-                                  type: string
-                                  nullable: true
-                                code:
-                                  type: string
-                                  nullable: true
-                                ellps:
-                                  type: string
+                        type: array
+                        description: List of items
         '400':
-          description: Bad Request
+          description: Bad request
           headers:
             Content-Type:
-              required: true
               schema:
                 type: string
-            Access-Control-Allow-Origin:
+              description: Content Type
               required: true
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              required: true
-              schema:
-                type: string
           content:
             application/json:
-              schema: &ref_18
+              schema: &ref_19
                 required:
                   - statusCode
                   - requestId
@@ -3355,39 +3462,14 @@ paths:
                       - type: object
                       - type: array
                     description: Error object or list of errors
-        '404':
-          description: Not Found
-          headers:
-            Content-Type:
-              required: true
-              schema:
-                type: string
-            Access-Control-Allow-Origin:
-              required: true
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              required: true
-              schema:
-                type: string
-          content:
-            application/json:
-              schema: *ref_18
         5XX:
-          description: Server Error
+          description: Server error
           headers:
             Content-Type:
-              required: true
               schema:
                 type: string
-            Access-Control-Allow-Origin:
+              description: Content Type
               required: true
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              required: true
-              schema:
-                type: string
           content:
             application/json:
-              schema: *ref_18
+              schema: *ref_19
