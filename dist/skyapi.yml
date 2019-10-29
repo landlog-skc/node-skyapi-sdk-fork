@@ -467,12 +467,6 @@ paths:
           required: false
           schema:
             type: string
-        - name: userId
-          in: query
-          description: User identifier
-          required: false
-          schema:
-            type: string
       requestBody:
         required: true
         content:
@@ -753,6 +747,9 @@ paths:
                             lon:
                               type: number
                               description: Photo longitude
+                            cameraModel:
+                              type: string
+                              description: Photo camera model
         '400':
           description: Bad Request
           headers:
@@ -913,6 +910,7 @@ paths:
                               - height
                               - lat
                               - lon
+                              - cameraModel
                             additionalProperties: false
                             properties:
                               name:
@@ -930,6 +928,9 @@ paths:
                               lon:
                                 type: number
                                 description: Photo longitude
+                              cameraModel:
+                                type: string
+                                description: Photo camera model
                           metadata:
                             type: object
                             required:
@@ -1245,10 +1246,19 @@ paths:
                   type: string
                   description: Type of process to run
                   enum:
+                    - photogrammetry
+                    - preProcessedFiles
                     - images
                     - pointCloud
                     - publish
                   default: images
+                sourceData:
+                  type: string
+                  description: Type of input images
+                  enum:
+                    - rgb_mixed
+                    - rgb_nadir
+                    - rgb_oblique
                 ccrs:
                   type: object
                   description: >-
@@ -1304,6 +1314,12 @@ paths:
                 type: string
               description: Content Type
               required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1373,13 +1389,20 @@ paths:
                           stateCode:
                             type: integer
         '400':
-          description: Bad request
+          description: Bad Request
           headers:
             Content-Type:
+              required: true
               schema:
                 type: string
-              description: Content Type
+            Access-Control-Allow-Origin:
               required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
           content:
             application/json:
               schema: &ref_7
@@ -1403,15 +1426,37 @@ paths:
                     description: Error object or list of errors
         '404':
           description: Not Found
-          content: {}
-        5XX:
-          description: Server error
           headers:
             Content-Type:
+              required: true
               schema:
                 type: string
-              description: Content Type
+            Access-Control-Allow-Origin:
               required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_7
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
           content:
             application/json:
               schema: *ref_7
@@ -2242,6 +2287,14 @@ paths:
         '400':
           description: Bad request
           headers:
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+              description: Access Control Allow Headers
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              description: Access Control Allow Origin
             Content-Type:
               schema:
                 type: string
@@ -2268,9 +2321,44 @@ paths:
                       - type: object
                       - type: array
                     description: Error object or list of errors
+        '403':
+          description: Forbidden
+          headers:
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+              description: Access Control Allow Headers
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              description: Access Control Allow Origin
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+          content:
+            application/json:
+              schema: *ref_12
         '404':
-          description: Not Found
-          content: {}
+          description: Not found
+          headers:
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+              description: Access Control Allow Headers
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              description: Access Control Allow Origin
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+          content:
+            application/json:
+              schema: *ref_12
         5XX:
           description: Server error
           headers:
@@ -2313,6 +2401,12 @@ paths:
                 type: string
               description: Content Type
               required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2320,6 +2414,7 @@ paths:
                   - required:
                       - statusCode
                       - requestId
+                      - next
                       - type
                       - data
                     additionalProperties: true
@@ -2331,52 +2426,49 @@ paths:
                       requestId:
                         type: string
                         description: Request unique identifier
+                      next:
+                        type: string
+                        description: Link to next set of items
                       type:
                         type: string
-                        description: Response data type
+                        description: Response item data type
                       data:
-                        type: object
-                        description: Response data
+                        type: array
+                        description: List of items
                   - type: object
                     required:
                       - data
                     properties:
                       data:
-                        required:
-                          - geoid
-                        additionalProperties: false
-                        type: object
-                        properties:
-                          geoid:
-                            type: array
-                            description: An array of matching Geoids
-                            items:
-                              type: object
-                              description: A Geoid object
-                              properties:
-                                models:
-                                  type: array
-                                  items:
-                                    type: object
-                                    properties:
-                                      name:
-                                        type: string
-                                      cols:
-                                        type: number
-                                      maxlat:
-                                        type: number
-                                      maxlon:
-                                        type: number
-                                      minlat:
-                                        type: number
-                                      minlon:
-                                        type: number
-                                      rows:
-                                        type: number
-                                      spacingLat:
-                                        type: number
-                                      spacingLon:
-                                        type: number
+                        type: array
+                        description: An array of matching Geoids
+                        items:
+                          type: object
+                          description: A Geoid object
+                          properties:
+                            models:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  cols:
+                                    type: number
+                                  maxlat:
+                                    type: number
+                                  maxlon:
+                                    type: number
+                                  minlat:
+                                    type: number
+                                  minlon:
+                                    type: number
+                                  rows:
+                                    type: number
+                                  spacingLat:
+                                    type: number
+                                  spacingLon:
+                                    type: number
         '400':
           description: Bad request
           headers:
@@ -2385,6 +2477,12 @@ paths:
                 type: string
               description: Content Type
               required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
           content:
             application/json:
               schema: &ref_13
@@ -2414,6 +2512,12 @@ paths:
                 type: string
               description: Content Type
               required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
           content:
             application/json:
               schema: *ref_13
@@ -2833,10 +2937,11 @@ paths:
                           - statusCode
                           - createdAt
                           - updatedAt
-                          - result
                         additionalProperties: false
                         properties:
                           id:
+                            type: string
+                          changeset:
                             type: string
                           state:
                             type: string
@@ -2878,6 +2983,10 @@ paths:
                                 type: number
                               overcut:
                                 type: number
+                              lowestPoint:
+                                type: array
+                              highestPoint:
+                                type: array
         '400':
           description: Bad Request
           headers:
@@ -2970,6 +3079,18 @@ paths:
               - basic_volume
               - cut_fill_volume
               - progress
+        - name: dryrun
+          in: query
+          description: Create measurement entry without starting the job
+          schema:
+            type: boolean
+            default: false
+        - name: refresh
+          in: query
+          description: Force re-calculation of a measurement
+          schema:
+            type: boolean
+            default: false
       requestBody:
         required: true
         content:
@@ -3022,6 +3143,27 @@ paths:
                           description: Coordinates
                 basePlane:
                   type: object
+                  description: >-
+                    Baseplane to compare the surface against for basic_volume
+                    measurements.
+                  properties:
+                    type:
+                      type: string
+                      default: interpolated
+                      enum:
+                        - interpolated
+                        - lowestElevation
+                        - customElevation
+                        - customShape
+                    height:
+                      type: number
+                      description: Required for "customElevation" or "lowestElevation"
+                changeThreshold:
+                  type: number
+                  minimum: 0
+                  description: >-
+                    Changes below this threshold will be ignored when
+                    calculating progress measurements.
       responses:
         '200':
           description: OK
@@ -3077,6 +3219,11 @@ paths:
                         properties:
                           id:
                             type: string
+                          changeset:
+                            type: string
+                            description: >-
+                              Changeset ID, only available for progress
+                              measurements
                           state:
                             type: string
                           statusCode:
@@ -3087,6 +3234,40 @@ paths:
                             format: date-time
                           updatedAt:
                             type: string
+                          result:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              area2d:
+                                type: number
+                              cut:
+                                type: number
+                              fill:
+                                type: number
+                              net:
+                                type: number
+                              total:
+                                type: number
+                              fillToDate:
+                                type: number
+                              fillProgress:
+                                type: number
+                              overfill:
+                                type: number
+                              totalFill:
+                                type: number
+                              cutToDate:
+                                type: number
+                              cutProgress:
+                                type: number
+                              totalCut:
+                                type: number
+                              overcut:
+                                type: number
+                              lowestPoint:
+                                type: array
+                              highestPoint:
+                                type: array
                           report:
                             type: object
                             additionalProperties: false
@@ -3117,6 +3298,10 @@ paths:
                                 type: number
                               overcut:
                                 type: number
+                              lowestPoint:
+                                type: array
+                              highestPoint:
+                                type: array
         '400':
           description: Bad Request
           headers:
@@ -3385,10 +3570,16 @@ paths:
                 type: string
               description: Content Type
               required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                oneOf:
+                allOf:
                   - required:
                       - statusCode
                       - requestId
@@ -3409,38 +3600,59 @@ paths:
                       data:
                         type: object
                         description: Response data
-                  - required:
-                      - statusCode
-                      - requestId
-                      - next
-                      - type
+                  - type: object
+                    required:
                       - data
-                    additionalProperties: true
-                    type: object
                     properties:
-                      statusCode:
-                        type: number
-                        description: Response status code
-                      requestId:
-                        type: string
-                        description: Request unique identifier
-                      next:
-                        type: string
-                        description: Link to next set of items
-                      type:
-                        type: string
-                        description: Response item data type
                       data:
-                        type: array
-                        description: List of items
+                        type: object
+                        additionalProperties:
+                          type: object
+                          required:
+                            - id
+                            - name
+                            - proj4
+                            - bbox
+                            - datum
+                          additionalProperties: false
+                          properties:
+                            id:
+                              type: number
+                            name:
+                              type: string
+                            proj4:
+                              type: string
+                            bbox:
+                              type: array
+                            units:
+                              type: string
+                            datum:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                name:
+                                  type: string
+                                  nullable: true
+                                code:
+                                  type: string
+                                  nullable: true
+                                ellps:
+                                  type: string
         '400':
-          description: Bad request
+          description: Bad Request
           headers:
             Content-Type:
+              required: true
               schema:
                 type: string
-              description: Content Type
+            Access-Control-Allow-Origin:
               required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
           content:
             application/json:
               schema: &ref_19
@@ -3462,14 +3674,39 @@ paths:
                       - type: object
                       - type: array
                     description: Error object or list of errors
-        5XX:
-          description: Server error
+        '404':
+          description: Not Found
           headers:
             Content-Type:
+              required: true
               schema:
                 type: string
-              description: Content Type
+            Access-Control-Allow-Origin:
               required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_19
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
           content:
             application/json:
               schema: *ref_19

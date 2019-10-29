@@ -225,7 +225,6 @@ module.exports = function SkyAPI({
    * @name createDataset
    * @param (string) authorization - Organization's access token
    * @param (string) token - User access token
-   * @param (string) userId - User identifier
    * @param (string) name - Dataset name
    * @param (string) sourceId -  The source ID in the app creating the dataset. If passed in it will be used as the name for the s3 object dir in place of the DUUID. 
    * @param (string) type - The dataset type
@@ -241,10 +240,6 @@ module.exports = function SkyAPI({
 
     if (params['token'] !== undefined) {
       query['token'] = params['token']
-    }
-
-    if (params['userId'] !== undefined) {
-      query['userId'] = params['userId']
     }
 
     if (params['name'] !== undefined) {
@@ -371,6 +366,7 @@ module.exports = function SkyAPI({
    * @param (string) uuid - Dataset ID
    * @param (boolean) dryrun - Create processing job entry without starting the job
    * @param (string) type - Type of process to run
+   * @param (string) sourceData - Type of input images
    * @param (object) ccrs - The definition of the custom coordinate reference system used to generate outputs and parse inputs
    * @param (object) options - Option flags to trigger custom behavior
    * @param (string) containerName - Name of the partner storage container to sync back
@@ -400,6 +396,10 @@ module.exports = function SkyAPI({
 
     if (params['type'] !== undefined) {
       body['type'] = params['type']
+    }
+
+    if (params['sourceData'] !== undefined) {
+      body['sourceData'] = params['sourceData']
     }
 
     if (params['ccrs'] !== undefined) {
@@ -773,12 +773,15 @@ module.exports = function SkyAPI({
    * @method
    * @name measureAggregateVolume
    * @param (string) type - Measurement Type
+   * @param (boolean) dryrun - Create measurement entry without starting the job
+   * @param (boolean) refresh - Force re-calculation of a measurement
    * @param (string) surfaceId - Processing Job UUID
    * @param (string) surfaceType - Surface type
    * @param (array) surfaces - Measure Aggregate Volume
    * @param (number) level - Zoom level
    * @param (object) feature - Measure Aggregate Volume
-   * @param (object) basePlane - Measure Aggregate Volume
+   * @param (object) basePlane - Baseplane to compare the surface against for basic_volume measurements.
+   * @param (number) changeThreshold - Changes below this threshold will be ignored when calculating progress measurements.
    */
 
   api.measureAggregateVolume = async (params = {}) => {
@@ -790,6 +793,14 @@ module.exports = function SkyAPI({
 
     if (params['type'] !== undefined) {
       path = path.replace('{' + 'type' + '}', params['type'])
+    }
+
+    if (params['dryrun'] !== undefined) {
+      query['dryrun'] = params['dryrun']
+    }
+
+    if (params['refresh'] !== undefined) {
+      query['refresh'] = params['refresh']
     }
 
     if (params['surfaceId'] !== undefined) {
@@ -814,6 +825,10 @@ module.exports = function SkyAPI({
 
     if (params['basePlane'] !== undefined) {
       body['basePlane'] = params['basePlane']
+    }
+
+    if (params['changeThreshold'] !== undefined) {
+      body['changeThreshold'] = params['changeThreshold']
     }
 
     return api.request({
