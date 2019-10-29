@@ -4,12 +4,14 @@
 SkyAPI v2 is based on [Open API] Specification.
 
 
-## Generate Output
+## Release
 
-**NOTE: All latest lambda definitions have to be pulled before building a new release!**
+```bash
+npm run build:release
+```
 
-1. **rm -rf node_modules/ package-lock.json**
-2. **npm i**
+
+## Build
 
 All outputs go inside the `dist/` folder:
 

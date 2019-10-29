@@ -5,6 +5,7 @@
   "main": "./dist/skyapi.js",
   "scripts": {
     "build": "npm run build:sdk && npm run build:json && npm run build:yaml",
+    "build:release": "rm -rf node_modules/ package-lock.json && npm i && npm run build",
     "build:sdk": "node bin/build.js sdk",
     "build:json": "node bin/build.js json",
     "build:yaml": "node bin/build.js yaml",
