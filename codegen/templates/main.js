@@ -3,10 +3,40 @@
 const fetch = require('@zeit/fetch-retry')(require('node-fetch'))
 const qs = require('qs')
 const jws = require('jws')
-const pkg = require('../package.json')
-const debug = require('debug')(
-  process.env.NODE_ENV === 'test' ? '@skycatch/node-skyapi-sdk' : pkg.name
-)
+
+const debug = (() => {
+  const pkg = require('../package.json')
+  const debug = require('debug')(
+    process.env.NODE_ENV === 'test' ? '@skycatch/node-skyapi-sdk' : pkg.name
+  )
+  // multiline fix for CloudWatch
+  // https://github.com/visionmedia/debug/issues/296#issuecomment-334283102
+  debug.log = console.log.bind(console)
+
+  // augment debug
+  const wrap = debug => {
+    // log
+    const fn = (...args) => {
+      process.env.NODE_ENV === 'test'
+        ? debug(...args)
+        : // stringify objects for nicer CloudWatch logs
+          debug(
+            ...args.map((arg, index) =>
+              typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+            )
+          )
+    }
+    // copy methods
+    Object.keys(debug).forEach(key => {
+      fn[key] = debug[key]
+    })
+    // return new wrapped namespace
+    fn.extend = namespace => wrap(debug.extend(namespace))
+    return fn
+  }
+
+  return wrap(debug)
+})()
 
 /*
   origin   : http://localhost:3000
