@@ -7,6 +7,7 @@ const jws = require('jws')
 const debug = (() => {
   const pkg = require('../package.json')
   const debug = require('debug')(
+    // there is no package when generating in tests
     process.env.NODE_ENV === 'test' ? '@skycatch/node-skyapi-sdk' : pkg.name
   )
   // multiline fix for CloudWatch
@@ -17,14 +18,17 @@ const debug = (() => {
   const wrap = debug => {
     // log
     const fn = (...args) => {
-      process.env.NODE_ENV === 'test'
-        ? debug(...args)
-        : // stringify objects for nicer CloudWatch logs
-          debug(
-            ...args.map((arg, index) =>
-              typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
-            )
-          )
+      // default behavior for local testing
+      if (process.env.NODE_ENV === 'test') {
+        debug(...args)
+      }
+      // for CloudWatch and Datadog
+      // print as single line JSON prefixed with the current namespace
+      else {
+        args.forEach(arg => {
+          console.log(JSON.stringify({ [fn.namespace]: arg }))
+        })
+      }
     }
     // copy methods
     Object.keys(debug).forEach(key => {
