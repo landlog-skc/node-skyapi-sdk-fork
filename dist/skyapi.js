@@ -68,7 +68,8 @@ module.exports = function SkyAPI({
   const api = {}
 
   api.refresh = async () => {
-    const res = await fetch((origin || `https://${tenant}`) + '/v1/oauth/token', {
+    const url = (origin || `https://${tenant}`) + '/v1/oauth/token'
+    const options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -79,11 +80,15 @@ module.exports = function SkyAPI({
         client_secret: secret,
         audience
       })
-    })
+    }
+
+    debug.extend('auth-request')(url)
+    debug.extend('auth-request')(options)
+    const res = await fetch(url, options)
 
     const json = await res.json()
-    debug.extend('auth-refresh')(res.status, res.statusText)
-    debug.extend('auth-refresh')(json)
+    debug.extend('auth-response')(res.status, res.statusText)
+    debug.extend('auth-response')(json)
 
     if (/^(4|5)/.test(res.status)) {
       throw new Error(JSON.stringify(json))
