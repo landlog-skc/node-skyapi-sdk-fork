@@ -4149,6 +4149,14 @@
                               "type": "number",
                               "description": "The current stateCode of the job"
                             },
+                            "dimension": {
+                              "type": "string",
+                              "description": "The dimension of the design file"
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "The type of the design file"
+                            },
                             "input": {
                               "type": "array",
                               "items": {
