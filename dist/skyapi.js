@@ -158,26 +158,6 @@ module.exports = function SkyAPI({
     }
   }
 
-  // v1 temporary methods
-
-  api.getProcessingJob = async ({
-    puuid
-  }) => {
-    let method = 'GET'
-    let path = `/v1/processes/${puuid}`
-    let query = {}
-    let body = {}
-    let security = true
-
-    return api.request({
-      method,
-      path,
-      query,
-      body,
-      security
-    })
-  }
-
   // v2 methods
   /**
    * Creates a transform matrix for CCRS localization
@@ -870,6 +850,33 @@ module.exports = function SkyAPI({
 
     if (params['changeThreshold'] !== undefined) {
       body['changeThreshold'] = params['changeThreshold']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security
+    })
+  }
+  /**
+   * Get Processing Job
+   * Get Processing Job
+   * @method
+   * @name getProcessingJob
+   * @param (string) uuid - Processing Job identifier
+   */
+
+  api.getProcessingJob = async (params = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/processes/{uuid}'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
     }
 
     return api.request({
