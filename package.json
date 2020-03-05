@@ -45,6 +45,7 @@
     "@skycatch/skyapi-measure-aggregate-volume-post": "github:skycatch/skyapi-measure-aggregate-volume-post#v1.0.0",
     "@skycatch/skyapi-measure-surface-elevation-post": "github:skycatch/skyapi-measure-surface-elevation-post#v1.0.0",
     "@skycatch/skyapi-measure-surface-get": "github:skycatch/skyapi-measure-surface-get#v1.0.0",
+    "@skycatch/skyapi-processing-get": "github:skycatch/skyapi-processing-get#v1.0.0",
     "@skycatch/skyapi-processing-result-get": "github:skycatch/skyapi-processing-result-get#v1.0.0",
     "@skycatch/skyapi-projections-get": "github:skycatch/skyapi-projections-get#v1.0.0",
     "mocha": "^6.1.4",

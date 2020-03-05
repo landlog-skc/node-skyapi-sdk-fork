@@ -135,9 +135,6 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     }
   }
 
-  // v1 temporary methods
-  {{>getProcessingJob}}
-
   // v2 methods
   {{#methods}}
     {{>method}}

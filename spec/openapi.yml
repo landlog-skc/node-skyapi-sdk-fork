@@ -94,6 +94,9 @@ paths:
   /measure/aggregate/{type}:
     post:
       $ref: '../node_modules/@skycatch/skyapi-measure-aggregate-volume-post/spec/lambda.yml'
+  /processes/{uuid}:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-processing-get/spec/lambda.yml'
   /processes/{uuid}/result:
     get:
       $ref: '../node_modules/@skycatch/skyapi-processing-result-get/spec/lambda.yml'
