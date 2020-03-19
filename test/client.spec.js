@@ -177,4 +177,28 @@ describe('client', () => {
     }
   })
 
+  it('node-fetch options', async () => {
+    server.once('request', (req, res) => {
+      res.setHeader('location', 'http://skycatch.com')
+      res.statusCode = 302
+      res.end(JSON.stringify({location: 'http://skycatch.com'}))
+    })
+    const skyapi = SkyAPI({
+      origin
+    })
+    var res = await skyapi.getProjections({}, {redirect: 'manual'})
+    t.deepEqual(res, {location: 'http://skycatch.com'})
+  })
+
+  it('sdk params override node-fetch options', async () => {
+    server.once('request', (req, res) => {
+      t.equal(req.method, 'GET')
+      res.end(JSON.stringify({}))
+    })
+    const skyapi = SkyAPI({
+      origin
+    })
+    await skyapi.getProjections({}, {method: 'POST'})
+  })
+
 })

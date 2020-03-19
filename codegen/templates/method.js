@@ -37,5 +37,5 @@ api.{{operationId}} = async (params = {}, options = {}) => {
 
   {{/parameters}}
 
-  return api.request({ options, method, path, query, body, security})
+  return api.request({method, path, query, body, security, options})
 }
