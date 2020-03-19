@@ -86,7 +86,7 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     return json.access_token
   }
 
-  api.request = async ({method, path, query, body, security}) => {
+  api.request = async ({method, path, query, body, security, options}) => {
     let headers = {}
 
     if (security) {
@@ -116,7 +116,7 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     }
 
     const url = (origin || `https://${domain}`) + path
-    const options = {method, headers, body}
+    options = {...options, method, headers, body}
 
     debug.extend('request')(url)
     debug.extend('request')(options)
