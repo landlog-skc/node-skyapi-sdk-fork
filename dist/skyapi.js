@@ -102,7 +102,8 @@ module.exports = function SkyAPI({
     path,
     query,
     body,
-    security
+    security,
+    options
   }) => {
     let headers = {}
 
@@ -136,7 +137,8 @@ module.exports = function SkyAPI({
     }
 
     const url = (origin || `https://${domain}`) + path
-    const options = {
+    options = {
+      ...options,
       method,
       headers,
       body
@@ -169,7 +171,7 @@ module.exports = function SkyAPI({
    * @param (string) units - Parses a localization file to create a new transform matrix to be used in a compound coordinate reference system (CCRS)
    */
 
-  api.createCCRSLocalization = async (params = {}) => {
+  api.createCCRSLocalization = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/ccrs/localization'
     let query = {}
@@ -193,7 +195,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -208,7 +211,7 @@ module.exports = function SkyAPI({
    * @param () designfile - Create STS credentials for use in S3 File Manager
    */
 
-  api.createFileManagerCredentials = async (params = {}) => {
+  api.createFileManagerCredentials = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/credentials/filemanager'
     let query = {}
@@ -236,7 +239,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -252,7 +256,7 @@ module.exports = function SkyAPI({
    * @param (object) metadata - Metadata about the dataset
    */
 
-  api.createDataset = async (params = {}) => {
+  api.createDataset = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets'
     let query = {}
@@ -284,7 +288,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -296,7 +301,7 @@ module.exports = function SkyAPI({
    * @param (boolean) exif - Fetch additional EXIF information for RAW photos in this dataset.
    */
 
-  api.getDataset = async (params = {}) => {
+  api.getDataset = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}'
     let query = {}
@@ -316,7 +321,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -329,7 +335,7 @@ module.exports = function SkyAPI({
    * @param (string) id - The photo identifier
    */
 
-  api.getDatasetPhoto = async (params = {}) => {
+  api.getDatasetPhoto = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/photos/{id}'
     let query = {}
@@ -349,7 +355,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -360,7 +367,7 @@ module.exports = function SkyAPI({
    * @param (string) uuid - Dataset ID
    */
 
-  api.listProcessingJobs = async (params = {}) => {
+  api.listProcessingJobs = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/processes'
     let query = {}
@@ -376,7 +383,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -400,7 +408,7 @@ module.exports = function SkyAPI({
    * @param (string) syncType - Description
    */
 
-  api.createProcessingJob = async (params = {}) => {
+  api.createProcessingJob = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/processes'
     let query = {}
@@ -468,7 +476,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -481,7 +490,7 @@ module.exports = function SkyAPI({
    * @param (string) authorization - Organization's access token
    */
 
-  api.getDatasetValidations = async (params = {}) => {
+  api.getDatasetValidations = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/validations'
     let query = {}
@@ -501,7 +510,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -515,7 +525,7 @@ module.exports = function SkyAPI({
    * @param (object) data - Validation input such as images or ccrs
    */
 
-  api.createDatasetValidations = async (params = {}) => {
+  api.createDatasetValidations = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/validations'
     let query = {}
@@ -539,7 +549,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -552,7 +563,7 @@ module.exports = function SkyAPI({
    * @param (string) authorization - Organization's access token
    */
 
-  api.deleteDatasetFile = async (params = {}) => {
+  api.deleteDatasetFile = async (params = {}, options = {}) => {
     let method = 'delete'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/files/{id}'
     let query = {}
@@ -572,7 +583,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -585,7 +597,7 @@ module.exports = function SkyAPI({
    * @param (string) authorization - Organization's access token
    */
 
-  api.deleteDatasetFiles = async (params = {}) => {
+  api.deleteDatasetFiles = async (params = {}, options = {}) => {
     let method = 'delete'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/files'
     let query = {}
@@ -605,7 +617,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -616,7 +629,7 @@ module.exports = function SkyAPI({
    * @param (string) uuid - Designfile identifier
    */
 
-  api.getDesignFiles = async (params = {}) => {
+  api.getDesignFiles = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/designfiles/{uuid}'
     let query = {}
@@ -632,7 +645,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -644,7 +658,7 @@ module.exports = function SkyAPI({
    * @param (number) lat - Latitude
    */
 
-  api.getGeoids = async (params = {}) => {
+  api.getGeoids = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/geoids'
     let query = {}
@@ -664,7 +678,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -677,7 +692,7 @@ module.exports = function SkyAPI({
    * @param (number) lon - Longtitude
    */
 
-  api.getGeoidsHeight = async (params = {}) => {
+  api.getGeoidsHeight = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/geoids/{id}/height'
     let query = {}
@@ -701,7 +716,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -717,7 +733,7 @@ module.exports = function SkyAPI({
    * @param (object) feature - Something
    */
 
-  api.measureSurfaceElevation = async (params = {}) => {
+  api.measureSurfaceElevation = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/measure/{type}'
     let query = {}
@@ -753,7 +769,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -765,7 +782,7 @@ module.exports = function SkyAPI({
    * @param (string) id - Measurement ID
    */
 
-  api.getMeasurementResult = async (params = {}) => {
+  api.getMeasurementResult = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/measure/{type}/${id}'
     let query = {}
@@ -785,7 +802,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -805,7 +823,7 @@ module.exports = function SkyAPI({
    * @param (number) changeThreshold - Changes below this threshold will be ignored when calculating progress measurements.
    */
 
-  api.measureAggregateVolume = async (params = {}) => {
+  api.measureAggregateVolume = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/measure/aggregate/{type}'
     let query = {}
@@ -857,7 +875,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -868,7 +887,7 @@ module.exports = function SkyAPI({
    * @param (string) uuid - Processing Job identifier
    */
 
-  api.getProcessingJob = async (params = {}) => {
+  api.getProcessingJob = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/processes/{uuid}'
     let query = {}
@@ -884,7 +903,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -897,7 +917,7 @@ module.exports = function SkyAPI({
    * @param (array) exportTypes - Export Types
    */
 
-  api.getProcessingResults = async (params = {}) => {
+  api.getProcessingResults = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/processes/{uuid}/result'
     let query = {}
@@ -921,7 +941,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -933,7 +954,7 @@ module.exports = function SkyAPI({
    * @param (number) lat - Latitude
    */
 
-  api.getProjections = async (params = {}) => {
+  api.getProjections = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/projections'
     let query = {}
@@ -953,7 +974,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
 
