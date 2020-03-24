@@ -129,7 +129,7 @@ module.exports = function SkyAPI({
       path += `?${qs.stringify(query, {arrayFormat: 'repeat'})}`
     }
 
-    if (/put|post|patch/i.test(method)) {
+    if (/put|post|patch|delete/i.test(method)) {
       headers['content-type'] = 'application/json'
       body = JSON.stringify(body)
     } else {
@@ -868,6 +868,191 @@ module.exports = function SkyAPI({
 
     if (params['changeThreshold'] !== undefined) {
       body['changeThreshold'] = params['changeThreshold']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Gets All Precog UI Jobs
+   * Gets All Precog UI Jobs
+   * @method
+   * @name getPrecogUIJobs
+   * @param (integer) count - response records count
+   * @param (string) next-process_uuid - next page token
+   */
+
+  api.getPrecogUIJobs = async (params = {}, options = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['count'] !== undefined) {
+      query['count'] = params['count']
+    }
+
+    if (params['next-process_uuid'] !== undefined) {
+      query['next-process_uuid'] = params['next-process_uuid']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Get Precog UI Job
+   * Get Precog UI Job
+   * @method
+   * @name getPrecogUIJob
+   * @param (string) uuid - Processing Job Identifier
+   */
+
+  api.getPrecogUIJob = async (params = {}, options = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs/{uuid}'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Enqueue Precot UI Job
+   * Enqueue Precot UI Job
+   * @method
+   * @name createPrecogUIJob
+   * @param (string) uuid - Processing Job Identifier
+   */
+
+  api.createPrecogUIJob = async (params = {}, options = {}) => {
+    let method = 'post'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs/{uuid}/process'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Delete marks for a specific precog job
+   * Delete marks for a specific precog job
+   * @method
+   * @name deletePrecogUiMarks
+   * @param (string) uuid - Processing Job Identifier
+   * @param (string) id - Marks Identifier
+   * @param (string) cpId - Delete marks for a specific precog job
+   * @param (string) imageId - Delete marks for a specific precog job
+   */
+
+  api.deletePrecogUiMarks = async (params = {}, options = {}) => {
+    let method = 'delete'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs/{uuid}/marks/{id}'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['id'] !== undefined) {
+      path = path.replace('{' + 'id' + '}', params['id'])
+    }
+
+    if (params['cpId'] !== undefined) {
+      body['cpId'] = params['cpId']
+    }
+
+    if (params['imageId'] !== undefined) {
+      body['imageId'] = params['imageId']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Update precog-ui marks
+   * Update precog-ui marks
+   * @method
+   * @name updatePrecogUIMarks
+   * @param (string) uuid - Processing Job Identifier
+   * @param (string) id - Marks Identifier
+   * @param (string) cpId - Update precog-ui marks
+   * @param (string) imageId - Update precog-ui marks
+   * @param (number) x - Update precog-ui marks
+   * @param (number) y - Update precog-ui marks
+   */
+
+  api.updatePrecogUIMarks = async (params = {}, options = {}) => {
+    let method = 'patch'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs/{uuid}/marks/{id}'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['id'] !== undefined) {
+      path = path.replace('{' + 'id' + '}', params['id'])
+    }
+
+    if (params['cpId'] !== undefined) {
+      body['cpId'] = params['cpId']
+    }
+
+    if (params['imageId'] !== undefined) {
+      body['imageId'] = params['imageId']
+    }
+
+    if (params['x'] !== undefined) {
+      body['x'] = params['x']
+    }
+
+    if (params['y'] !== undefined) {
+      body['y'] = params['y']
     }
 
     return api.request({

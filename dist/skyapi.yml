@@ -3380,6 +3380,865 @@ paths:
           content:
             application/json:
               schema: *ref_17
+  /precog-jobs:
+    get:
+      tags:
+        - precog_ui
+      summary: Gets All Precog UI Jobs
+      description: Gets All Precog UI Jobs
+      operationId: getPrecogUIJobs
+      parameters:
+        - name: count
+          in: query
+          description: response records count
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
+        - name: next-process_uuid
+          in: query
+          description: next page token
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - next
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      next:
+                        type: string
+                        description: Link to next set of items
+                      type:
+                        type: string
+                        description: Response item data type
+                      data:
+                        type: array
+                        description: List of items
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                            - uuid
+                            - status
+                          additionalProperties: false
+                          properties:
+                            uuid:
+                              type: string
+                            status:
+                              type: string
+                              enum:
+                                - needs-marks
+                                - ready-to-process
+                                - done
+                            updatedAt:
+                              type: string
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_18
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_18
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_18
+  '/precog-jobs/{uuid}':
+    get:
+      tags:
+        - precog_ui
+      summary: Get Precog UI Job
+      description: Get Precog UI Job
+      operationId: getPrecogUIJob
+      parameters:
+        - name: uuid
+          in: path
+          description: Processing Job Identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      type:
+                        type: string
+                        description: Response data type
+                      data:
+                        type: object
+                        description: Response data
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - controlPoints
+                          - marks
+                          - images
+                        additionalProperties: false
+                        properties:
+                          controlPoints:
+                            type: array
+                            description: Control points
+                            items:
+                              type: object
+                              properties:
+                                cpId:
+                                  type: string
+                                name:
+                                  type: string
+                                x:
+                                  type: number
+                                lng:
+                                  type: number
+                                'y':
+                                  type: number
+                                lat:
+                                  type: number
+                                z:
+                                  type: number
+                                alt:
+                                  type: number
+                                tagId:
+                                  type: string
+                                type:
+                                  type: string
+                                utmX:
+                                  type: string
+                                utmY:
+                                  type: string
+                                utmZ:
+                                  type: string
+                                utmZone:
+                                  type: string
+                          marks:
+                            type: object
+                            additionalProperties:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  cpId:
+                                    type: string
+                                  x:
+                                    type: number
+                                  'y':
+                                    type: number
+                          images:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                filename:
+                                  type: string
+                                tag:
+                                  type: object
+                                  properties:
+                                    Make:
+                                      type: string
+                                    Model:
+                                      type: string
+                                    Orientation:
+                                      type: string
+                                    GPSLatitudeRef:
+                                      type: string
+                                    GPSLatitude:
+                                      type: number
+                                    GPSLongitudeRef:
+                                      type: string
+                                    GPSLongitude:
+                                      type: string
+                                    GPSAltitudeRef:
+                                      type: string
+                                    GPSAltitude:
+                                      type: number
+                                    DateTimeOriginal:
+                                      type: integer
+                                size:
+                                  type: object
+                                  properties:
+                                    height:
+                                      type: integer
+                                    width:
+                                      type: integer
+                                key:
+                                  type: string
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_19
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_19
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_19
+  '/precog-jobs/{uuid}/process':
+    post:
+      tags:
+        - precog_ui
+      summary: Enqueue Precot UI Job
+      description: Enqueue Precot UI Job
+      operationId: createPrecogUIJob
+      parameters:
+        - name: uuid
+          in: path
+          description: Processing Job Identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      type:
+                        type: string
+                        description: Response data type
+                      data:
+                        type: object
+                        description: Response data
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        required:
+                          - puuid
+                          - resumeAt
+                        additionalProperties: false
+                        type: object
+                        properties:
+                          puuid:
+                            type: string
+                            description: Processing Job Identifier
+                          resumeAt:
+                            type: string
+                            description: Stage to resume at
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_20
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_20
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_20
+  '/precog-jobs/{uuid}/marks/{id}':
+    delete:
+      tags:
+        - precog_ui_job_marks
+      summary: Delete marks for a specific precog job
+      description: Delete marks for a specific precog job
+      operationId: deletePrecogUiMarks
+      parameters:
+        - name: uuid
+          in: path
+          description: Processing Job Identifier
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: Marks Identifier
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                cpId:
+                  type: string
+                imageId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      type:
+                        type: string
+                        description: Response data type
+                      data:
+                        type: object
+                        description: Response data
+                  - required:
+                      - statusCode
+                      - requestId
+                      - next
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      next:
+                        type: string
+                        description: Link to next set of items
+                      type:
+                        type: string
+                        description: Response item data type
+                      data:
+                        type: array
+                        description: List of items
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_21
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_21
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_21
+    patch:
+      tags:
+        - precog_ui_job_marks
+      summary: Update precog-ui marks
+      description: Update precog-ui marks
+      operationId: updatePrecogUIMarks
+      parameters:
+        - name: uuid
+          in: path
+          description: Processing Job Identifier
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: Marks Identifier
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                cpId:
+                  type: string
+                imageId:
+                  type: string
+                x:
+                  type: number
+                'y':
+                  type: number
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: Content Type
+              required: true
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - required:
+                      - statusCode
+                      - requestId
+                      - type
+                      - data
+                    additionalProperties: true
+                    type: object
+                    properties:
+                      statusCode:
+                        type: number
+                        description: Response status code
+                      requestId:
+                        type: string
+                        description: Request unique identifier
+                      type:
+                        type: string
+                        description: Response data type
+                      data:
+                        type: object
+                        description: Response data
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - markId
+                          - cpId
+                          - imageId
+                          - x
+                          - 'y'
+                        additionalProperties: false
+                        properties:
+                          markId:
+                            type: string
+                          cpId:
+                            type: string
+                          imageId:
+                            type: string
+                          x:
+                            type: number
+                          'y':
+                            type: number
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &ref_22
+                required:
+                  - statusCode
+                  - requestId
+                  - error
+                additionalProperties: false
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    description: Response status code
+                  requestId:
+                    type: string
+                    description: Request unique identifier
+                  error:
+                    oneOf:
+                      - type: object
+                      - type: array
+                    description: Error object or list of errors
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_22
+        5XX:
+          description: Server Error
+          headers:
+            Content-Type:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              required: true
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: *ref_22
   '/processes/{uuid}':
     get:
       tags:
@@ -3493,7 +4352,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_18
+              schema: &ref_23
                 required:
                   - statusCode
                   - requestId
@@ -3529,7 +4388,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_18
+              schema: *ref_23
         5XX:
           description: Server Error
           headers:
@@ -3547,7 +4406,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_18
+              schema: *ref_23
   '/processes/{uuid}/result':
     get:
       tags:
@@ -3674,7 +4533,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_19
+              schema: &ref_24
                 required:
                   - statusCode
                   - requestId
@@ -3702,7 +4561,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_19
+              schema: *ref_24
         5XX:
           description: Server Error
           headers:
@@ -3712,7 +4571,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_19
+              schema: *ref_24
   /projections:
     get:
       tags:
@@ -3829,7 +4688,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: &ref_20
+              schema: &ref_25
                 required:
                   - statusCode
                   - requestId
@@ -3865,7 +4724,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_20
+              schema: *ref_25
         5XX:
           description: Server Error
           headers:
@@ -3883,4 +4742,4 @@ paths:
                 type: string
           content:
             application/json:
-              schema: *ref_20
+              schema: *ref_25
