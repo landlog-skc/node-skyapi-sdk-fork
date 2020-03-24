@@ -94,6 +94,20 @@ paths:
   /measure/aggregate/{type}:
     post:
       $ref: '../node_modules/@skycatch/skyapi-measure-aggregate-volume-post/spec/lambda.yml'
+  /precog-jobs:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-precog-ui-jobs-get-all/spec/lambda.yml'
+  /precog-jobs/{uuid}:
+    get:
+      $ref: '../node_modules/@skycatch/skyapi-precog-ui-jobs-get/spec/lambda.yml'
+  /precog-jobs/{uuid}/process:
+    post:
+      $ref: '../node_modules/@skycatch/skyapi-precog-ui-jobs-process-post/spec/lambda.yml'
+  /precog-jobs/{uuid}/marks/{id}:
+    delete:
+      $ref: '../node_modules/@skycatch/skyapi-precog-ui-jobs-marks-delete/spec/lambda.yml'
+    patch:
+      $ref: '../node_modules/@skycatch/skyapi-precog-ui-jobs-marks-patch/spec/lambda.yml'
   /processes/{uuid}:
     get:
       $ref: '../node_modules/@skycatch/skyapi-processing-get/spec/lambda.yml'
