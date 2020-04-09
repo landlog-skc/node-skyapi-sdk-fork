@@ -6,28 +6,39 @@ const jws = require('jws')
 const debug = require('debug')('@skycatch/node-skyapi-sdk')
 
 const print = {
-  request: ({url, options}) => {
+  headers: (res) => ((
+    keys = Array.from(res.headers.keys()),
+    values = Array.from(res.headers.values())) =>
+      keys.reduce((all, key, index) =>
+        (all[key] = values[index], all), {})
+  )(),
+  request: ({method, url, headers, body}) => {
     if (process.env.NODE_ENV === 'test') {
-      debug.extend('request')(url)
-      debug.extend('request')(options)
+      console.log(body)
+      console.log(typeof body)
+      debug.extend('request')(method, url)
+      debug.extend('request')(headers)
+      debug.extend('request')(body ? JSON.parse(body) : undefined)
     }
     else {
       console.log(JSON.stringify({
-        'skyapi-sdk-request': {url, ...options}
+        'skyapi-sdk-request': {
+          method, url, headers, body: body ? JSON.parse(body) : undefined
+        }
       }))
     }
   },
   response: ({res, body}) => {
     if (process.env.NODE_ENV === 'test') {
       debug.extend('response')(res.status, res.statusText)
-      debug.extend('response')(res.headers)
+      debug.extend('response')(print.headers(res))
       debug.extend('response')(body)
     }
     else {
       console.log(JSON.stringify({
         'skyapi-sdk-response': {
           status: `${res.status} ${res.statusText}`,
-          headers: res.headers,
+          headers: print.headers(res),
           body
         }
       }))
@@ -50,22 +61,20 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
   const api = {}
 
   api.refresh = async () => {
+    const method = 'POST'
     const url = (origin || `https://${tenant}`) + '/v1/oauth/token'
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        grant_type: 'client_credentials',
-        client_id: key,
-        client_secret: secret,
-        audience
-      })
+    const headers = {
+      'Content-Type': 'application/json'
     }
+    const body = JSON.stringify({
+      grant_type: 'client_credentials',
+      client_id: key,
+      client_secret: secret,
+      audience
+    })
 
-    print.request({url, options})
-    const res = await fetch(url, options)
+    print.request({url, method, headers, body})
+    const res = await fetch(url, {method, headers, body})
     const json = await res.json()
     print.response({res, body: json})
 
@@ -108,7 +117,7 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     const url = (origin || `https://${domain}`) + path
     options = {...options, method, headers, body}
 
-    print.request({url, options})
+    print.request({url, method, headers, body})
     const res = await fetch(url, options)
     const json = await res.json()
     print.response({res, body: json})
