@@ -15,7 +15,7 @@ const print = {
       debug.extend('request')(options)
     } else {
       console.log(JSON.stringify({
-        'skyapi-sdk-auth-request': {
+        'skyapi-sdk-request': {
           url,
           ...options
         }
