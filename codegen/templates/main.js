@@ -13,7 +13,7 @@ const print = {
     }
     else {
       console.log(JSON.stringify({
-        'skyapi-sdk-auth-request': {url, ...options}
+        'skyapi-sdk-request': {url, ...options}
       }))
     }
   },
