@@ -3,44 +3,37 @@
 const fetch = require('@zeit/fetch-retry')(require('node-fetch'))
 const qs = require('qs')
 const jws = require('jws')
+const debug = require('debug')('@skycatch/node-skyapi-sdk')
 
-const debug = (() => {
-  const pkg = require('../package.json')
-  const debug = require('debug')(
-    // there is no package when generating in tests
-    process.env.NODE_ENV === 'test' ? '@skycatch/node-skyapi-sdk' : pkg.name
-  )
-  // multiline fix for CloudWatch
-  // https://github.com/visionmedia/debug/issues/296#issuecomment-334283102
-  debug.log = console.log.bind(console)
-
-  // augment debug
-  const wrap = debug => {
-    // log
-    const fn = (...args) => {
-      // default behavior for local testing
-      if (process.env.NODE_ENV === 'test') {
-        debug(...args)
-      }
-      // for CloudWatch and Datadog
-      // print as single line JSON prefixed with the current namespace
-      else {
-        args.forEach(arg => {
-          console.log(JSON.stringify({ [fn.namespace]: arg }))
-        })
-      }
+const print = {
+  request: ({url, options}) => {
+    if (process.env.NODE_ENV === 'test') {
+      debug.extend('request')(url)
+      debug.extend('request')(options)
     }
-    // copy methods
-    Object.keys(debug).forEach(key => {
-      fn[key] = debug[key]
-    })
-    // return new wrapped namespace
-    fn.extend = namespace => wrap(debug.extend(namespace))
-    return fn
+    else {
+      console.log(JSON.stringify({
+        'skyapi-sdk-auth-request': {url, ...options}
+      }))
+    }
+  },
+  response: ({res, body}) => {
+    if (process.env.NODE_ENV === 'test') {
+      debug.extend('response')(res.status, res.statusText)
+      debug.extend('response')(res.headers)
+      debug.extend('response')(body)
+    }
+    else {
+      console.log(JSON.stringify({
+        'skyapi-sdk-response': {
+          status: `${res.status} ${res.statusText}`,
+          headers: res.headers,
+          body
+        }
+      }))
+    }
   }
-
-  return wrap(debug)
-})()
+}
 
 /*
   origin   : http://localhost:3000
@@ -71,13 +64,10 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
       })
     }
 
-    debug.extend('auth-request')(url)
-    debug.extend('auth-request')(options)
+    print.request({url, options})
     const res = await fetch(url, options)
-
     const json = await res.json()
-    debug.extend('auth-response')(res.status, res.statusText)
-    debug.extend('auth-response')(json)
+    print.response({res, body: json})
 
     if (/^(4|5)/.test(res.status)) {
       throw new Error(JSON.stringify(json))
@@ -118,14 +108,10 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     const url = (origin || `https://${domain}`) + path
     options = {...options, method, headers, body}
 
-    debug.extend('request')(url)
-    debug.extend('request')(options)
+    print.request({url, options})
     const res = await fetch(url, options)
-
     const json = await res.json()
-    debug.extend('response')(res.status, res.statusText)
-    debug.extend('response')(res.headers)
-    debug.extend('response')(json)
+    print.response({res, body: json})
 
     if (/^(4|5)/.test(res.status)) {
       throw new Error(JSON.stringify(json))
