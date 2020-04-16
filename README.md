@@ -4,7 +4,14 @@
 SkyAPI v2 is based on [Open API] Specification.
 
 
-## Generate Output
+## Release
+
+```bash
+npm run build:release
+```
+
+
+## Build
 
 All outputs go inside the `dist/` folder:
 

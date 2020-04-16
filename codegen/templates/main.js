@@ -3,10 +3,48 @@
 const fetch = require('@zeit/fetch-retry')(require('node-fetch'))
 const qs = require('qs')
 const jws = require('jws')
-const pkg = require('../package.json')
-const debug = require('debug')(
-  process.env.NODE_ENV === 'test' ? '@skycatch/node-skyapi-sdk' : pkg.name
-)
+const debug = require('debug')('@skycatch/node-skyapi-sdk')
+
+const print = {
+  headers: (res) => ((
+    keys = Array.from(res.headers.keys()),
+    values = Array.from(res.headers.values())) =>
+      keys.reduce((all, key, index) =>
+        (all[key] = values[index], all), {})
+  )(),
+  request: ({method, url, headers, body}) => {
+    if (process.env.NODE_ENV === 'test') {
+      console.log(body)
+      console.log(typeof body)
+      debug.extend('request')(method, url)
+      debug.extend('request')(headers)
+      debug.extend('request')(body ? JSON.parse(body) : undefined)
+    }
+    else {
+      console.log(JSON.stringify({
+        'skyapi-sdk-request': {
+          method, url, headers, body: body ? JSON.parse(body) : undefined
+        }
+      }))
+    }
+  },
+  response: ({res, body}) => {
+    if (process.env.NODE_ENV === 'test') {
+      debug.extend('response')(res.status, res.statusText)
+      debug.extend('response')(print.headers(res))
+      debug.extend('response')(body)
+    }
+    else {
+      console.log(JSON.stringify({
+        'skyapi-sdk-response': {
+          status: `${res.status} ${res.statusText}`,
+          headers: print.headers(res),
+          body
+        }
+      }))
+    }
+  }
+}
 
 /*
   origin   : http://localhost:3000
@@ -23,22 +61,22 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
   const api = {}
 
   api.refresh = async () => {
-    const res = await fetch((origin || `https://${tenant}`) + '/v1/oauth/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        grant_type: 'client_credentials',
-        client_id: key,
-        client_secret: secret,
-        audience
-      })
+    const method = 'POST'
+    const url = (origin || `https://${tenant}`) + '/v1/oauth/token'
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+    const body = JSON.stringify({
+      grant_type: 'client_credentials',
+      client_id: key,
+      client_secret: secret,
+      audience
     })
 
+    print.request({url, method, headers, body})
+    const res = await fetch(url, {method, headers, body})
     const json = await res.json()
-    debug.extend('auth-refresh')(res.status, res.statusText)
-    debug.extend('auth-refresh')(json)
+    print.response({res, body: json})
 
     if (/^(4|5)/.test(res.status)) {
       throw new Error(JSON.stringify(json))
@@ -47,7 +85,7 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     return json.access_token
   }
 
-  api.request = async ({method, path, query, body, security}) => {
+  api.request = async ({method, path, query, body, security, options}) => {
     let headers = {}
 
     if (security) {
@@ -68,7 +106,7 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
       path += `?${qs.stringify(query, {arrayFormat: 'repeat'})}`
     }
 
-    if (/put|post|patch/i.test(method)) {
+    if (/put|post|patch|delete/i.test(method)) {
       headers['content-type'] = 'application/json'
       body = JSON.stringify(body)
     }
@@ -77,16 +115,12 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
     }
 
     const url = (origin || `https://${domain}`) + path
-    const options = {method, headers, body}
+    options = {...options, method, headers, body}
 
-    debug.extend('request')(url)
-    debug.extend('request')(options)
+    print.request({url, method, headers, body})
     const res = await fetch(url, options)
-
     const json = await res.json()
-    debug.extend('response')(res.status, res.statusText)
-    debug.extend('response')(res.headers)
-    debug.extend('response')(json)
+    print.response({res, body: json})
 
     if (/^(4|5)/.test(res.status)) {
       throw new Error(JSON.stringify(json))
@@ -95,9 +129,6 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
      return json
     }
   }
-
-  // v1 temporary methods
-  {{>getProcessingJob}}
 
   // v2 methods
   {{#methods}}

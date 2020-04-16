@@ -8,7 +8,7 @@
 {{/parameters}}
 */
 
-api.{{operationId}} = async (params = {}) => {
+api.{{operationId}} = async (params = {}, options = {}) => {
   let method = '{{method}}'.toUpperCase()
   let path = `/v${version || 2}` + '{{&endpoint}}'
   let query = {}
@@ -37,5 +37,5 @@ api.{{operationId}} = async (params = {}) => {
 
   {{/parameters}}
 
-  return api.request({method, path, query, body, security})
+  return api.request({method, path, query, body, security, options})
 }

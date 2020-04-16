@@ -3,10 +3,57 @@
 const fetch = require('@zeit/fetch-retry')(require('node-fetch'))
 const qs = require('qs')
 const jws = require('jws')
-const pkg = require('../package.json')
-const debug = require('debug')(
-  process.env.NODE_ENV === 'test' ? '@skycatch/node-skyapi-sdk' : pkg.name
-)
+const debug = require('debug')('@skycatch/node-skyapi-sdk')
+
+const print = {
+  headers: (res) => ((
+      keys = Array.from(res.headers.keys()),
+      values = Array.from(res.headers.values())) =>
+    keys.reduce((all, key, index) =>
+      (all[key] = values[index], all), {})
+  )(),
+  request: ({
+    method,
+    url,
+    headers,
+    body
+  }) => {
+    if (process.env.NODE_ENV === 'test') {
+      console.log(body)
+      console.log(typeof body)
+      debug.extend('request')(method, url)
+      debug.extend('request')(headers)
+      debug.extend('request')(body ? JSON.parse(body) : undefined)
+    } else {
+      console.log(JSON.stringify({
+        'skyapi-sdk-request': {
+          method,
+          url,
+          headers,
+          body: body ? JSON.parse(body) : undefined
+        }
+      }))
+    }
+  },
+  response: ({
+    res,
+    body
+  }) => {
+    if (process.env.NODE_ENV === 'test') {
+      debug.extend('response')(res.status, res.statusText)
+      debug.extend('response')(print.headers(res))
+      debug.extend('response')(body)
+    } else {
+      console.log(JSON.stringify({
+        'skyapi-sdk-response': {
+          status: `${res.status} ${res.statusText}`,
+          headers: print.headers(res),
+          body
+        }
+      }))
+    }
+  }
+}
 
 /*
   origin   : http://localhost:3000
@@ -32,22 +79,34 @@ module.exports = function SkyAPI({
   const api = {}
 
   api.refresh = async () => {
-    const res = await fetch((origin || `https://${tenant}`) + '/v1/oauth/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        grant_type: 'client_credentials',
-        client_id: key,
-        client_secret: secret,
-        audience
-      })
+    const method = 'POST'
+    const url = (origin || `https://${tenant}`) + '/v1/oauth/token'
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+    const body = JSON.stringify({
+      grant_type: 'client_credentials',
+      client_id: key,
+      client_secret: secret,
+      audience
     })
 
+    print.request({
+      url,
+      method,
+      headers,
+      body
+    })
+    const res = await fetch(url, {
+      method,
+      headers,
+      body
+    })
     const json = await res.json()
-    debug.extend('auth-refresh')(res.status, res.statusText)
-    debug.extend('auth-refresh')(json)
+    print.response({
+      res,
+      body: json
+    })
 
     if (/^(4|5)/.test(res.status)) {
       throw new Error(JSON.stringify(json))
@@ -61,7 +120,8 @@ module.exports = function SkyAPI({
     path,
     query,
     body,
-    security
+    security,
+    options
   }) => {
     let headers = {}
 
@@ -87,7 +147,7 @@ module.exports = function SkyAPI({
       path += `?${qs.stringify(query, {arrayFormat: 'repeat'})}`
     }
 
-    if (/put|post|patch/i.test(method)) {
+    if (/put|post|patch|delete/i.test(method)) {
       headers['content-type'] = 'application/json'
       body = JSON.stringify(body)
     } else {
@@ -95,46 +155,31 @@ module.exports = function SkyAPI({
     }
 
     const url = (origin || `https://${domain}`) + path
-    const options = {
+    options = {
+      ...options,
       method,
       headers,
       body
     }
 
-    debug.extend('request')(url)
-    debug.extend('request')(options)
+    print.request({
+      url,
+      method,
+      headers,
+      body
+    })
     const res = await fetch(url, options)
-
     const json = await res.json()
-    debug.extend('response')(res.status, res.statusText)
-    debug.extend('response')(res.headers)
-    debug.extend('response')(json)
+    print.response({
+      res,
+      body: json
+    })
 
     if (/^(4|5)/.test(res.status)) {
       throw new Error(JSON.stringify(json))
     } else {
       return json
     }
-  }
-
-  // v1 temporary methods
-
-  api.getProcessingJob = async ({
-    puuid
-  }) => {
-    let method = 'GET'
-    let path = `/v1/processes/${puuid}`
-    let query = {}
-    let body = {}
-    let security = true
-
-    return api.request({
-      method,
-      path,
-      query,
-      body,
-      security
-    })
   }
 
   // v2 methods
@@ -148,7 +193,7 @@ module.exports = function SkyAPI({
    * @param (string) units - Parses a localization file to create a new transform matrix to be used in a compound coordinate reference system (CCRS)
    */
 
-  api.createCCRSLocalization = async (params = {}) => {
+  api.createCCRSLocalization = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/ccrs/localization'
     let query = {}
@@ -172,7 +217,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -187,7 +233,7 @@ module.exports = function SkyAPI({
    * @param () designfile - Create STS credentials for use in S3 File Manager
    */
 
-  api.createFileManagerCredentials = async (params = {}) => {
+  api.createFileManagerCredentials = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/credentials/filemanager'
     let query = {}
@@ -215,7 +261,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -225,14 +272,13 @@ module.exports = function SkyAPI({
    * @name createDataset
    * @param (string) authorization - Organization's access token
    * @param (string) token - User access token
-   * @param (string) userId - User identifier
    * @param (string) name - Dataset name
    * @param (string) sourceId -  The source ID in the app creating the dataset. If passed in it will be used as the name for the s3 object dir in place of the DUUID. 
    * @param (string) type - The dataset type
    * @param (object) metadata - Metadata about the dataset
    */
 
-  api.createDataset = async (params = {}) => {
+  api.createDataset = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets'
     let query = {}
@@ -241,10 +287,6 @@ module.exports = function SkyAPI({
 
     if (params['token'] !== undefined) {
       query['token'] = params['token']
-    }
-
-    if (params['userId'] !== undefined) {
-      query['userId'] = params['userId']
     }
 
     if (params['name'] !== undefined) {
@@ -268,7 +310,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -280,7 +323,7 @@ module.exports = function SkyAPI({
    * @param (boolean) exif - Fetch additional EXIF information for RAW photos in this dataset.
    */
 
-  api.getDataset = async (params = {}) => {
+  api.getDataset = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}'
     let query = {}
@@ -300,7 +343,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -313,7 +357,7 @@ module.exports = function SkyAPI({
    * @param (string) id - The photo identifier
    */
 
-  api.getDatasetPhoto = async (params = {}) => {
+  api.getDatasetPhoto = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/photos/{id}'
     let query = {}
@@ -333,7 +377,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -344,7 +389,7 @@ module.exports = function SkyAPI({
    * @param (string) uuid - Dataset ID
    */
 
-  api.listProcessingJobs = async (params = {}) => {
+  api.listProcessingJobs = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/processes'
     let query = {}
@@ -360,7 +405,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -371,6 +417,7 @@ module.exports = function SkyAPI({
    * @param (string) uuid - Dataset ID
    * @param (boolean) dryrun - Create processing job entry without starting the job
    * @param (string) type - Type of process to run
+   * @param (string) sourceData - Type of input images
    * @param (object) ccrs - The definition of the custom coordinate reference system used to generate outputs and parse inputs
    * @param (object) options - Option flags to trigger custom behavior
    * @param (string) containerName - Name of the partner storage container to sync back
@@ -383,7 +430,7 @@ module.exports = function SkyAPI({
    * @param (string) syncType - Description
    */
 
-  api.createProcessingJob = async (params = {}) => {
+  api.createProcessingJob = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/processes'
     let query = {}
@@ -400,6 +447,10 @@ module.exports = function SkyAPI({
 
     if (params['type'] !== undefined) {
       body['type'] = params['type']
+    }
+
+    if (params['sourceData'] !== undefined) {
+      body['sourceData'] = params['sourceData']
     }
 
     if (params['ccrs'] !== undefined) {
@@ -447,7 +498,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -460,7 +512,7 @@ module.exports = function SkyAPI({
    * @param (string) authorization - Organization's access token
    */
 
-  api.getDatasetValidations = async (params = {}) => {
+  api.getDatasetValidations = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/validations'
     let query = {}
@@ -480,7 +532,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -494,7 +547,7 @@ module.exports = function SkyAPI({
    * @param (object) data - Validation input such as images or ccrs
    */
 
-  api.createDatasetValidations = async (params = {}) => {
+  api.createDatasetValidations = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/validations'
     let query = {}
@@ -518,7 +571,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -531,7 +585,7 @@ module.exports = function SkyAPI({
    * @param (string) authorization - Organization's access token
    */
 
-  api.deleteDatasetFile = async (params = {}) => {
+  api.deleteDatasetFile = async (params = {}, options = {}) => {
     let method = 'delete'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/files/{id}'
     let query = {}
@@ -551,7 +605,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -564,7 +619,7 @@ module.exports = function SkyAPI({
    * @param (string) authorization - Organization's access token
    */
 
-  api.deleteDatasetFiles = async (params = {}) => {
+  api.deleteDatasetFiles = async (params = {}, options = {}) => {
     let method = 'delete'.toUpperCase()
     let path = `/v${version || 2}` + '/datasets/{uuid}/files'
     let query = {}
@@ -584,7 +639,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -595,7 +651,7 @@ module.exports = function SkyAPI({
    * @param (string) uuid - Designfile identifier
    */
 
-  api.getDesignFiles = async (params = {}) => {
+  api.getDesignFiles = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/designfiles/{uuid}'
     let query = {}
@@ -611,7 +667,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -623,7 +680,7 @@ module.exports = function SkyAPI({
    * @param (number) lat - Latitude
    */
 
-  api.getGeoids = async (params = {}) => {
+  api.getGeoids = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/geoids'
     let query = {}
@@ -643,7 +700,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -656,7 +714,7 @@ module.exports = function SkyAPI({
    * @param (number) lon - Longtitude
    */
 
-  api.getGeoidsHeight = async (params = {}) => {
+  api.getGeoidsHeight = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/geoids/{id}/height'
     let query = {}
@@ -680,7 +738,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -696,7 +755,7 @@ module.exports = function SkyAPI({
    * @param (object) feature - Something
    */
 
-  api.measureSurfaceElevation = async (params = {}) => {
+  api.measureSurfaceElevation = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/measure/{type}'
     let query = {}
@@ -732,7 +791,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -744,7 +804,7 @@ module.exports = function SkyAPI({
    * @param (string) id - Measurement ID
    */
 
-  api.getMeasurementResult = async (params = {}) => {
+  api.getMeasurementResult = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/measure/{type}/${id}'
     let query = {}
@@ -764,7 +824,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -773,15 +834,18 @@ module.exports = function SkyAPI({
    * @method
    * @name measureAggregateVolume
    * @param (string) type - Measurement Type
+   * @param (boolean) dryrun - Create measurement entry without starting the job
+   * @param (boolean) refresh - Force re-calculation of a measurement
    * @param (string) surfaceId - Processing Job UUID
    * @param (string) surfaceType - Surface type
    * @param (array) surfaces - Measure Aggregate Volume
    * @param (number) level - Zoom level
    * @param (object) feature - Measure Aggregate Volume
-   * @param (object) basePlane - Measure Aggregate Volume
+   * @param (object) basePlane - Baseplane to compare the surface against for basic_volume measurements.
+   * @param (number) changeThreshold - Changes below this threshold will be ignored when calculating progress measurements.
    */
 
-  api.measureAggregateVolume = async (params = {}) => {
+  api.measureAggregateVolume = async (params = {}, options = {}) => {
     let method = 'post'.toUpperCase()
     let path = `/v${version || 2}` + '/measure/aggregate/{type}'
     let query = {}
@@ -790,6 +854,14 @@ module.exports = function SkyAPI({
 
     if (params['type'] !== undefined) {
       path = path.replace('{' + 'type' + '}', params['type'])
+    }
+
+    if (params['dryrun'] !== undefined) {
+      query['dryrun'] = params['dryrun']
+    }
+
+    if (params['refresh'] !== undefined) {
+      query['refresh'] = params['refresh']
     }
 
     if (params['surfaceId'] !== undefined) {
@@ -816,12 +888,230 @@ module.exports = function SkyAPI({
       body['basePlane'] = params['basePlane']
     }
 
+    if (params['changeThreshold'] !== undefined) {
+      body['changeThreshold'] = params['changeThreshold']
+    }
+
     return api.request({
       method,
       path,
       query,
       body,
-      security
+      security,
+      options
+    })
+  }
+  /**
+   * Gets All Precog UI Jobs
+   * Gets All Precog UI Jobs
+   * @method
+   * @name getPrecogUIJobs
+   * @param (integer) count - response records count
+   * @param (string) next-process_uuid - next page token
+   */
+
+  api.getPrecogUIJobs = async (params = {}, options = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['count'] !== undefined) {
+      query['count'] = params['count']
+    }
+
+    if (params['next-process_uuid'] !== undefined) {
+      query['next-process_uuid'] = params['next-process_uuid']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Get Precog UI Job
+   * Get Precog UI Job
+   * @method
+   * @name getPrecogUIJob
+   * @param (string) uuid - Processing Job Identifier
+   */
+
+  api.getPrecogUIJob = async (params = {}, options = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs/{uuid}'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Enqueue Precot UI Job
+   * Enqueue Precot UI Job
+   * @method
+   * @name createPrecogUIJob
+   * @param (string) uuid - Processing Job Identifier
+   */
+
+  api.createPrecogUIJob = async (params = {}, options = {}) => {
+    let method = 'post'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs/{uuid}/process'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Delete marks for a specific precog job
+   * Delete marks for a specific precog job
+   * @method
+   * @name deletePrecogUiMarks
+   * @param (string) uuid - Processing Job Identifier
+   * @param (string) id - Marks Identifier
+   * @param (string) cpId - Delete marks for a specific precog job
+   * @param (string) imageId - Delete marks for a specific precog job
+   */
+
+  api.deletePrecogUiMarks = async (params = {}, options = {}) => {
+    let method = 'delete'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs/{uuid}/marks/{id}'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['id'] !== undefined) {
+      path = path.replace('{' + 'id' + '}', params['id'])
+    }
+
+    if (params['cpId'] !== undefined) {
+      body['cpId'] = params['cpId']
+    }
+
+    if (params['imageId'] !== undefined) {
+      body['imageId'] = params['imageId']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Update precog-ui marks
+   * Update precog-ui marks
+   * @method
+   * @name updatePrecogUIMarks
+   * @param (string) uuid - Processing Job Identifier
+   * @param (string) id - Marks Identifier
+   * @param (string) cpId - Update precog-ui marks
+   * @param (string) imageId - Update precog-ui marks
+   * @param (number) x - Update precog-ui marks
+   * @param (number) y - Update precog-ui marks
+   */
+
+  api.updatePrecogUIMarks = async (params = {}, options = {}) => {
+    let method = 'patch'.toUpperCase()
+    let path = `/v${version || 2}` + '/precog-jobs/{uuid}/marks/{id}'
+    let query = {}
+    let body = {}
+    let security = false
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    if (params['id'] !== undefined) {
+      path = path.replace('{' + 'id' + '}', params['id'])
+    }
+
+    if (params['cpId'] !== undefined) {
+      body['cpId'] = params['cpId']
+    }
+
+    if (params['imageId'] !== undefined) {
+      body['imageId'] = params['imageId']
+    }
+
+    if (params['x'] !== undefined) {
+      body['x'] = params['x']
+    }
+
+    if (params['y'] !== undefined) {
+      body['y'] = params['y']
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
+    })
+  }
+  /**
+   * Get Processing Job
+   * Get Processing Job
+   * @method
+   * @name getProcessingJob
+   * @param (string) uuid - Processing Job identifier
+   */
+
+  api.getProcessingJob = async (params = {}, options = {}) => {
+    let method = 'get'.toUpperCase()
+    let path = `/v${version || 2}` + '/processes/{uuid}'
+    let query = {}
+    let body = {}
+    let security = true
+
+    if (params['uuid'] !== undefined) {
+      path = path.replace('{' + 'uuid' + '}', params['uuid'])
+    }
+
+    return api.request({
+      method,
+      path,
+      query,
+      body,
+      security,
+      options
     })
   }
   /**
@@ -834,7 +1124,7 @@ module.exports = function SkyAPI({
    * @param (array) exportTypes - Export Types
    */
 
-  api.getProcessingResults = async (params = {}) => {
+  api.getProcessingResults = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/processes/{uuid}/result'
     let query = {}
@@ -858,7 +1148,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
   /**
@@ -870,7 +1161,7 @@ module.exports = function SkyAPI({
    * @param (number) lat - Latitude
    */
 
-  api.getProjections = async (params = {}) => {
+  api.getProjections = async (params = {}, options = {}) => {
     let method = 'get'.toUpperCase()
     let path = `/v${version || 2}` + '/projections'
     let query = {}
@@ -890,7 +1181,8 @@ module.exports = function SkyAPI({
       path,
       query,
       body,
-      security
+      security,
+      options
     })
   }
 
