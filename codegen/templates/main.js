@@ -51,6 +51,7 @@ const print = {
 }
 
 /*
+  env      : dev, stage, prod
   origin   : http://localhost:3000
   domain   : staging-gemba.skycatch.com, staging-api.skycatch.com
   tenant   : skycatch-development.auth0.com, skycatch-staging.auth0.com
@@ -61,7 +62,7 @@ const print = {
   version  : the SkyAPI version to use - 2, 1
 */
 
-module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience, token, version}) {
+module.exports = function SkyAPI ({env, origin, domain, tenant, key, secret, audience, token, version}) {
   const api = {}
 
   api.refresh = async () => {
@@ -91,6 +92,10 @@ module.exports = function SkyAPI ({origin, domain, tenant, key, secret, audience
 
   api.request = async ({method, path, query, body, security, options}) => {
     let headers = {}
+
+    if (env) {
+      headers['x-dh-env'] = env
+    }
 
     if (security) {
       if (!token && key && secret) {
