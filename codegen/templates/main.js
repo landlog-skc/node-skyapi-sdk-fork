@@ -13,9 +13,10 @@ const print = {
         (all[key] = values[index], all), {})
   )(),
   request: ({method, url, headers, body}) => {
+    if (!/@skycatch\//.test(process.env.DEBUG)) {
+      return
+    }
     if (process.env.NODE_ENV === 'test') {
-      console.log(body)
-      console.log(typeof body)
       debug.extend('request')(method, url)
       debug.extend('request')(headers)
       debug.extend('request')(body ? JSON.parse(body) : undefined)
@@ -29,6 +30,9 @@ const print = {
     }
   },
   response: ({res, body}) => {
+    if (!/@skycatch\//.test(process.env.DEBUG)) {
+      return
+    }
     if (process.env.NODE_ENV === 'test') {
       debug.extend('response')(res.status, res.statusText)
       debug.extend('response')(print.headers(res))
