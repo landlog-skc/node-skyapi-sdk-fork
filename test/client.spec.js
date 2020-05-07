@@ -103,6 +103,18 @@ describe('client', () => {
     })
   })
 
+  it('set x-dh-env header', async () => {
+    server.once('request', (req, res) => {
+      t.equal(req.headers['x-dh-env'], 'prod')
+      res.end(JSON.stringify({}))
+    })
+    const skyapi = SkyAPI({
+      env: 'prod',
+      origin
+    })
+    await skyapi.getProjections()
+  })
+
   it('do not add authorization header on missing credentials', async () => {
     server.once('request', (req, res) => {
       t.equal(req.headers.authorization, undefined)
