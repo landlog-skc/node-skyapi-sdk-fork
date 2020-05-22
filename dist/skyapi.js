@@ -28,13 +28,12 @@ const print = {
       debug.extend('request')(body ? JSON.parse(body) : undefined)
     } else {
       console.log(JSON.stringify({
-        'skyapi-sdk-request': {
-          requestId,
-          method,
-          url,
-          headers,
-          body: body ? JSON.parse(body) : undefined
-        }
+        requestId,
+        type: 'skyapi',
+        method,
+        url,
+        headers,
+        body: body ? JSON.parse(body) : undefined
       }))
     }
   },
@@ -52,12 +51,11 @@ const print = {
       debug.extend('response')(body)
     } else {
       console.log(JSON.stringify({
-        'skyapi-sdk-response': {
-          requestId,
-          status: `${res.status} ${res.statusText}`,
-          headers: print.headers(res),
-          body
-        }
+        requestId,
+        type: 'skyapi',
+        status: `${res.status} ${res.statusText}`,
+        headers: print.headers(res),
+        body
       }))
     }
   }
