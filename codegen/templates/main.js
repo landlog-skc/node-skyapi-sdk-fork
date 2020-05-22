@@ -23,9 +23,12 @@ const print = {
     }
     else {
       console.log(JSON.stringify({
-        'skyapi-sdk-request': {
-          requestId, method, url, headers, body: body ? JSON.parse(body) : undefined
-        }
+        requestId,
+        type: 'skyapi',
+        method,
+        url,
+        headers,
+        body: body ? JSON.parse(body) : undefined
       }))
     }
   },
@@ -40,12 +43,11 @@ const print = {
     }
     else {
       console.log(JSON.stringify({
-        'skyapi-sdk-response': {
-          requestId,
-          status: `${res.status} ${res.statusText}`,
-          headers: print.headers(res),
-          body
-        }
+        requestId,
+        type: 'skyapi',
+        status: `${res.status} ${res.statusText}`,
+        headers: print.headers(res),
+        body
       }))
     }
   }
