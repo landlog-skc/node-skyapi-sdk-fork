@@ -12,7 +12,7 @@ const print = {
       keys.reduce((all, key, index) =>
         (all[key] = values[index], all), {})
   )(),
-  request: ({method, url, headers, body}) => {
+  request: ({requestId, method, url, headers, body}) => {
     if (!/@skycatch\//.test(process.env.DEBUG)) {
       return
     }
@@ -23,13 +23,16 @@ const print = {
     }
     else {
       console.log(JSON.stringify({
-        'skyapi-sdk-request': {
-          method, url, headers, body: body ? JSON.parse(body) : undefined
-        }
+        requestId,
+        type: 'skyapi',
+        method,
+        url,
+        headers,
+        body: body ? JSON.parse(body) : undefined
       }))
     }
   },
-  response: ({res, body}) => {
+  response: ({requestId, res, body}) => {
     if (!/@skycatch\//.test(process.env.DEBUG)) {
       return
     }
@@ -40,11 +43,11 @@ const print = {
     }
     else {
       console.log(JSON.stringify({
-        'skyapi-sdk-response': {
-          status: `${res.status} ${res.statusText}`,
-          headers: print.headers(res),
-          body
-        }
+        requestId,
+        type: 'skyapi',
+        status: `${res.status} ${res.statusText}`,
+        headers: print.headers(res),
+        body
       }))
     }
   }
@@ -90,7 +93,7 @@ module.exports = function SkyAPI ({env, origin, domain, tenant, key, secret, aud
     return json.access_token
   }
 
-  api.request = async ({method, path, query, body, security, options}) => {
+  api.request = async ({method, path, query, body, security, options = {}}) => {
     let headers = {}
 
     if (env) {
@@ -124,12 +127,14 @@ module.exports = function SkyAPI ({env, origin, domain, tenant, key, secret, aud
     }
 
     const url = (origin || `https://${domain}`) + path
+    const requestId = options.requestId
+    delete options.requestId
     options = {...options, method, headers, body}
 
-    print.request({url, method, headers, body})
+    print.request({requestId, url, method, headers, body})
     const res = await fetch(url, options)
     const json = await res.json()
-    print.response({res, body: json})
+    print.response({requestId, res, body: json})
 
     if (/^(4|5)/.test(res.status)) {
       throw new Error(JSON.stringify(json))

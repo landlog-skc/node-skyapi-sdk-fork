@@ -13,6 +13,7 @@ const print = {
       (all[key] = values[index], all), {})
   )(),
   request: ({
+    requestId,
     method,
     url,
     headers,
@@ -27,16 +28,17 @@ const print = {
       debug.extend('request')(body ? JSON.parse(body) : undefined)
     } else {
       console.log(JSON.stringify({
-        'skyapi-sdk-request': {
-          method,
-          url,
-          headers,
-          body: body ? JSON.parse(body) : undefined
-        }
+        requestId,
+        type: 'skyapi',
+        method,
+        url,
+        headers,
+        body: body ? JSON.parse(body) : undefined
       }))
     }
   },
   response: ({
+    requestId,
     res,
     body
   }) => {
@@ -49,11 +51,11 @@ const print = {
       debug.extend('response')(body)
     } else {
       console.log(JSON.stringify({
-        'skyapi-sdk-response': {
-          status: `${res.status} ${res.statusText}`,
-          headers: print.headers(res),
-          body
-        }
+        requestId,
+        type: 'skyapi',
+        status: `${res.status} ${res.statusText}`,
+        headers: print.headers(res),
+        body
       }))
     }
   }
@@ -127,7 +129,7 @@ module.exports = function SkyAPI({
     query,
     body,
     security,
-    options
+    options = {}
   }) => {
     let headers = {}
 
@@ -165,6 +167,8 @@ module.exports = function SkyAPI({
     }
 
     const url = (origin || `https://${domain}`) + path
+    const requestId = options.requestId
+    delete options.requestId
     options = {
       ...options,
       method,
@@ -173,6 +177,7 @@ module.exports = function SkyAPI({
     }
 
     print.request({
+      requestId,
       url,
       method,
       headers,
@@ -181,6 +186,7 @@ module.exports = function SkyAPI({
     const res = await fetch(url, options)
     const json = await res.json()
     print.response({
+      requestId,
       res,
       body: json
     })
